@@ -9,10 +9,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import networkx as nx
 import zipfile
-import io
+
 
 # Path al file ZIP
-zip_path = 'C:/Users/mima/Desktop/Network_project/archive.zip'
+zip_path = 'C:/Users/mima/Desktop/network-project/archive.zip'
 
 # open zip file and read the CSV
 with zipfile.ZipFile(zip_path, 'r') as z:
@@ -33,6 +33,8 @@ air_pos = dict(zip(airports_clean['IATA'], zip(airports_clean['Longitude'], airp
 # creation of a graph
 G = nx.from_pandas_edgelist(routes_clean2, source = 'Source airport', target = 'Destination airport')
 
+adj = nx.to_pandas_edgelist(G)
+adj.to_csv('flight_graph.csv', index=False)
 #visualization of the data
 fig = plt.scatter('Longitude', 'Latitude', data = airports_clean, s=8)
 
