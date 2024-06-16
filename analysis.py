@@ -66,7 +66,7 @@ plt.show()
 
 diameter = nx.average_shortest_path_length(G) # the distances are kept all =1 otherwise weights
 
-def error(G):
+def error(G, n):
     '''
     
 
@@ -74,7 +74,10 @@ def error(G):
     ----------
     G : TYPE
         DESCRIPTION.
-
+        
+    n : TYPE
+        DESCRIPTION.
+        
     Returns
     -------
     TYPE
@@ -82,10 +85,11 @@ def error(G):
 
     '''
     edges = list(G.edges())
-    random_edges = random.choice(edges)
-    return G.remove_edge(random_edges[0],random_edges[1])
+    random_edges = random.sample(edges, n)
+    G.remove_edges_from(random_edges)
+    return G
 
-def attack(G):
+def attack(G, n):
     '''
     
 
@@ -93,16 +97,19 @@ def attack(G):
     ----------
     G : TYPE
         DESCRIPTION.
-
+    
+    n : TYPE
+        DESCRIPTION.
+        
     Returns
     -------
     None.
 
     '''
-    
+
     degrees = dict(G.degree())
-    node_max = max(degrees, key = degrees.get)
-    return G.remove_node(node_max)
+    top_n_nodes = sorted(degrees, key=degrees.get, reverse=True)[:n]
+    return G.remove_node(top_n_nodes)
 
 
 
@@ -156,4 +163,4 @@ plt.title('Flight degree pdf', size=18)
 plt.legend()
 plt.show()
 
->>>>>>> 3320980d617bf887526fbc7310210445028abc84
+
