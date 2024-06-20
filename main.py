@@ -3,6 +3,8 @@
 Created on Tue Jun 11 18:16:01 2024
 
 @author: mima
+
+Downloading data of flight trasportation, cleaning them and creation of a graph 
 """
 
 import pandas as pd
@@ -36,7 +38,4 @@ G = nx.from_pandas_edgelist(routes_clean2, source = 'Source airport ID', target 
 
 adj = nx.to_pandas_edgelist(G)
 adj.to_csv('flight_graph.csv', index=False)
-#visualization of the data
-fig = plt.scatter('Longitude', 'Latitude', data = airports_clean, s=8)
 
-nx.draw(G, air_pos, node_color='blue', edge_color='gray', node_size=10)
