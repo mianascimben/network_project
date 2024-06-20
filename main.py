@@ -11,6 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import networkx as nx
 import zipfile
+import pickle
 
 
 # Path al file ZIP
@@ -36,6 +37,6 @@ air_pos = dict(zip(airports_clean['Airport ID'], zip(airports_clean['Longitude']
 # creation of a graph
 G = nx.from_pandas_edgelist(routes_clean2, source = 'Source airport ID', target = 'Destination airport ID')
 
-adj = nx.to_pandas_edgelist(G)
-adj.to_csv('flight_graph.csv', index=False)
+with open('flight.gpickle', 'wb') as f:
+    pickle.dump(G, f, pickle.HIGHEST_PROTOCOL)
 
