@@ -186,28 +186,41 @@ def calculate_diameter(G):
     The average shortest path length is a measure of the efficiency of information flow in the graph, 
     representing the average distance between all pairs of nodes.
     '''
-    # the feature 'nx.is_connected' only works with undirrected graph
+    # divided the cases of directed and undirected graphs because of the difference
+    # in the definition of connected and strongly connected.
     if G.is_directed(): 
-        G_undirected = G.to_undirected()
-        
-    if nx.is_connected(G_undirected):
-        diameter = nx.average_shortest_path_length(G_undirected) 
-        
-    else:    
-        # To avoid errors because of isolated points using nx.average_shortest_path_length(G)
-        # it is preferred to store the shortest path length among all pairs of nodes 
-        # and then average it. This method works even with isolated points. 
-        shortest_paths = nx.shortest_path_length(G_undirected)
-        
-        # Extract path lengths into a flat list, skipping paths of length 0 as irrilevant
-        shortest_path_list = [
-            length for node, paths in shortest_paths
-            for length in paths.values() if length > 0
-            ]
+        if nx.is_strongly_connected(G):
+            diameter = nx.average_shortest_path_length(G)
+        else : 
+            # To avoid errors because of isolated points using nx.average_shortest_path_length(G)
+            # it is preferred to store the shortest path length among all pairs of nodes 
+            # and then average it. This method works even with isolated points. 
+            shortest_paths = nx.shortest_path_length(G)
+            
+            # Extract path lengths into a flat list, skipping paths of length 0 as irrilevant
+            shortest_path_list = [
+                length for node, paths in shortest_paths
+                for length in paths.values() if length > 0
+                ]
 
-        shortest_path_list = np.array(shortest_path_list, dtype=np.int32)
+            shortest_path_list = np.array(shortest_path_list, dtype=np.int32)
+            
+            diameter = sts.mean(shortest_path_list)
+    else : # undirected case   
+        if nx.is_connected(G):
+            diameter = nx.average_shortest_path_length(G) 
         
-        diameter = sts.mean(shortest_path_list)
+        else:    
+            shortest_paths = nx.shortest_path_length(G)
+            
+            shortest_path_list = [
+                length for node, paths in shortest_paths
+                for length in paths.values() if length > 0
+                ]
+
+            shortest_path_list = np.array(shortest_path_list, dtype=np.int32)
+        
+            diameter = sts.mean(shortest_path_list)
     return diameter
 
 def attack(G, num_attacks = 1):
@@ -424,3 +437,51 @@ def diameter_vs_attacks(G, max_frequency_attack = 0.05, num_points = 20):
        
    return frequencies.tolist(), diameters
    
+def largest_connected_component_size(G):
+    '''
+    Calculates the size of the largest connected component in the network. 
+    
+    The size is the total number of nodes the largest component is composed of.
+    
+    Parameters
+    ----------
+    G : networkx.classes.graph.Graph
+        The input graph.
+
+    Returns
+    -------
+    largest_cc_size : int
+        The size of the largest connected component in the network.
+        
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> nx.add_path(G, [10, 11, 12])
+    >>> giant_component_size(G)
+    4
+    
+    Notes
+    -----
+    In graph theory, the way components are calculated are different for undirected 
+    and directed graph. In the first type of netwroks a component is a subgraph of connected 
+    vertices that are not connected to any node of other subgraphs, while, in directed 
+    graph, there are strongly or weakly connected components. A component is said 
+    strongly connected if every vertex is reachable from every other vertex; these types 
+    of subgraphs can still communicate each other if all the edges between them
+    go from one to the other and not viceversa.
+    On the other hand, weakly connected components are subgraph whose vertices are 
+    totally ordered by reachability.
+    This function works with weakly connected components as they are isolated subgraphs
+    like in the connected components of undirected graphs.
+    
+    
+    '''
+    # divided the case of directed and undirected graphs because of the difference
+    # in the definition of components
+    if G.is_directed() : 
+        largest_cc = max(nx.weakly_connected_components(G), key=len)
+        largest_cc_size = len(largest_cc)
+    else :
+        largest_cc = max(nx.connected_components(G), key=len)
+        largest_cc_size = len(largest_cc)
+    return largest_cc_size
