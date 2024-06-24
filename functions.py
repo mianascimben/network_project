@@ -8,7 +8,6 @@ import random
 import networkx as nx
 import numpy as np
 from scipy.optimize import curve_fit
-import statistics as sts
 
 def fit_data(f, x, y):
     '''
@@ -205,7 +204,7 @@ def calculate_diameter(G):
 
             shortest_path_list = np.array(shortest_path_list, dtype=np.int32)
             
-            diameter = sts.mean(shortest_path_list)
+            diameter = np.mean(shortest_path_list)
     else : # undirected case   
         if nx.is_connected(G):
             diameter = nx.average_shortest_path_length(G) 
@@ -220,7 +219,7 @@ def calculate_diameter(G):
 
             shortest_path_list = np.array(shortest_path_list, dtype=np.int32)
         
-            diameter = sts.mean(shortest_path_list)
+            diameter = np.mean(shortest_path_list)
     return diameter
 
 def attack(G, num_attacks = 1):
@@ -457,7 +456,7 @@ def largest_connected_component_size(G):
     --------
     >>> G = nx.path_graph(4)
     >>> nx.add_path(G, [10, 11, 12])
-    >>> giant_component_size(G)
+    >>> largest_connected_component_size(G)
     4
     
     Notes
@@ -477,7 +476,7 @@ def largest_connected_component_size(G):
     
     '''
     # divided the case of directed and undirected graphs because of the difference
-    # in the definition of components
+    # in the definition of the connected components
     if G.is_directed() : 
         largest_cc = max(nx.weakly_connected_components(G), key=len)
         largest_cc_size = len(largest_cc)
@@ -485,3 +484,44 @@ def largest_connected_component_size(G):
         largest_cc = max(nx.connected_components(G), key=len)
         largest_cc_size = len(largest_cc)
     return largest_cc_size
+
+def average_size_connected_components(G):
+    '''
+    Calculate the average size among all the connected components of the network, but 
+    the largest one. 
+    
+    Parameters
+    ----------
+    G : networkx.classes.graph.Graph
+        The input graph.
+
+    Returns
+    -------
+    average_size : 
+        The average size of all the connected components, but the largest one.
+        
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> nx.add_path(G, [10, 11, 12])
+    >>> nx.add_path(G, [13])
+    >>> average_size_connected_componets(G)
+    2
+    
+    '''
+    # divided the case of directed and undirected graphs because of the difference
+    # in the definition of the connected components
+    if G.is_directed() : 
+        sizes = [len(c) for c in sorted(nx.weakly_connected_components(G), key=len)]
+        # erase the biggest (the last one) because we are interested in the behaviour 
+        # of all the other components
+        sizes_without_the_biggest = sizes[:-1]
+        average_size = np.mean(sizes_without_the_biggest)
+    else :
+        sizes = [len(c) for c in sorted(nx.connected_components(G), key=len)]
+        sizes_without_the_biggest = sizes[:-1]
+        average_size = np.mean(sizes_without_the_biggest)
+    return average_size
+    
+    
+    
