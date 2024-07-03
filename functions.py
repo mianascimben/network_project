@@ -315,20 +315,26 @@ def error(G, num_errors = 1):
     
     return G_with_errors
 
-def diameter_vs_errors(G, max_frequency_error = 0.05, num_points = 20):
+def diameter_vs_removals(G, random_removal = 'True', max_removal_rate = 0.05, num_points = 20):
     '''
     Examine the impact of error frequency on the diameter of the input graph 'G'.
 
     This function generates new versions of the input graph 'G', each subjected
-    to a different frequency of errors (random node removals). It then calculates 
-    the diameter (average shortest path length) of each modified graph and returns 
-    the data for further analysis or plotting.
+    to a different node removal rates. The removals can be randomly (error) or 
+    hierarchically (attack) selected depending on the value of 'random_removal': 
+        True for errors
+        False for attacks
+    It then calculates the diameter (average shortest path length) of each modified 
+    graph and returns the data for further analysis or plotting.
 
     Parameters
     ----------
     G : networkx.classes.graph.Graph
         The input graph to be analyzed.
-    max_frequency_error : float, optional
+    random_removal : boolean, optional 
+         It represents the nature of the node removals. True for errors and 
+         False for attacks. The default is True.
+    max_removal_rate : float, optional
         A float between 0 and 1 that represents the maximum error frequency, 
         expressed as a fraction of the number of nodes in the graph. The default 
         value is 0.05.
@@ -349,7 +355,7 @@ def diameter_vs_errors(G, max_frequency_error = 0.05, num_points = 20):
     Examples
     --------
     >>> G = nx.erdos_renyi_graph(100, 0.05)
-    >>> freq, diam = diameter_vs_errors(G, max_frequency_error=0.1, num_points=20)
+    >>> freq, diam = diameter_vs_errors(G, random_removal = True, max_frequency_error=0.1, num_points=20)
     >>> print(freq)
     [0.0, 0.00526316, 0.01052632, ..., 0.1]
     >>> print(diam)
@@ -357,84 +363,32 @@ def diameter_vs_errors(G, max_frequency_error = 0.05, num_points = 20):
     
     Notes
     -----
-    The function assumes the existence of an `error` function that can apply a 
-    specified number of errors to a graph, and a `calculate_diameter` function 
-    that computes the average shortest path length of a graph.
+    The function assumes the existence of an `error` and an 'attack' function, 
+    a `calculate_diameter` and a generate_frequencies function.
     '''
     number_of_nodes = G.number_of_nodes()
-    frequencies = generate_frequencies(max_frequency_error, num_points)
-    num_errors = (frequencies * number_of_nodes).astype(int)
+    frequencies = generate_frequencies(max_removal_rate, num_points)
+    num_removals = (frequencies * number_of_nodes).astype(int)
 
     # avoid the repetition of equal numbers in num_errors
-    num_errors_cleaned = np.unique(num_errors)
+    num_removals_cleaned = np.unique(num_removals)
+    frequencies_cleaned = (1/number_of_nodes)*num_removals_cleaned
     
     diameters = []
-    for i in num_errors_cleaned:
-        G_error = error(G, i)
-        diameters.append(nx.average_shortest_path_length(G_error))
-       
-    return frequencies.tolist(), diameters
-
-def diameter_vs_attacks(G, max_frequency_attack = 0.05, num_points = 20):
-   '''
-    Analyze the impact of attack frequency on the diameter of the input graph 'G'.
-
-    This function generates new versions of the input graph 'G', each subjected 
-    to a different frequency of attacks (removal of the most connected nodes). 
-    It calculates the diameters (average shortest path lengths) of these graphs 
-    and provides the data to be used as inputs in the `diameter_plot(x, y)` function.
-
-    Parameters
-    ----------
-    G : networkx.classes.graph.Graph
-        The input graph to be analyzed.
-    max_frequency_attack : float, optional
-        A number between 0 and 1 representing the maximum attack frequency, 
-        expressed as a fraction of the total number of nodes in the graph. 
-        The default value is 0.05.
-    num_points : int, optional
-        The number of different attack frequencies to generate. The frequencies 
-        are evenly spaced based on this number. The default value is 20.
-
-    Returns
-    -------
-    frequency_of_attack : list of float
-        A list of attack frequencies applied to the graph. These can be used 
-        as the x-axis values in the `diameter_plot(x, y)` function.
-    diameters : list of float
-        A list of diameters corresponding to each attack frequency. These 
-        represent the average shortest path lengths of the graph after 
-        being subjected to the specified frequencies of attacks. They can 
-        be used as the y-axis values in the `diameter_plot(x, y)` function.
-
-    Examples
-    --------
-    >>> G = nx.erdos_renyi_graph(100, 0.05)
-    >>> frequencies, diameters = diameter_vs_attacks(G, max_frequency_attack=0.1, num_points=10)
-    >>> print(frequencies)
-    [0.0, 0.0111, 0.0222, ..., 0.1]
-    >>> print(diameters)
-    [2.5, 2.8, 3.1, ..., 5.2]
-
-    Notes
-    -----
-    The function avoids the repetition of equal numbers in the list of 
-    calculated attack frequencies to ensure unique attack scenarios.
-    '''
     
-   number_of_nodes = G.number_of_nodes()
-   frequencies = generate_frequencies(max_frequency_attack, num_points)
-   num_attacks = (frequencies * number_of_nodes).astype(int)
-
-   # avoid the repetition of equal numbers in num_attacks
-   num_attacks_cleaned = np.unique(num_attacks)
+    if random_removal:
+        
+        for i in num_removals_cleaned:
+            G_error = error(G, i)
+            diameters.append(calculate_diameter(G_error))
+     
+    else:
+        
+        for i in num_removals_cleaned:
+            G_attack = attack(G, i)
+            diameters.append(calculate_diameter(G_attack))
     
-   diameters = []
-   for i in num_attacks_cleaned:
-       G_attack = attack(G, i)
-       diameters.append(nx.average_shortest_path_length(G_attack))
-       
-   return frequencies.tolist(), diameters
+    return frequencies_cleaned, diameters
    
 def largest_connected_component_size(G):
     '''
@@ -497,7 +451,7 @@ def average_size_connected_components(G):
 
     Returns
     -------
-    average_size : 
+    average_size : numpy.float64
         The average size of all the connected components, but the largest one.
         
     Examples
@@ -524,4 +478,75 @@ def average_size_connected_components(G):
     return average_size
     
     
+def SizeLargestComponent_vs_removals(G, random_removal = 'True', max_removal_rate = 0.05, num_points = 20):
+    '''
+    Examine the impact of node removals on the size of the largest connected component.
+
+    This function generates new versions of the input graph 'G', each subjected
+    to a different node removal rates. The removals can be randomly (error) or 
+    hierarchically (attack) selected depending on the value of 'random_removal': 
+        True for errors
+        False for attacks
+    It then calculates the size of the largest connected component of each modified
+    graph and returns the data for further analysis or plotting.
+
+    Parameters
+    ----------
+    G : networkx.classes.graph.Graph
+        The input graph to be analyzed.
+    random_removal : boolean, optional 
+         It represents the nature of the node removals. True for errors and 
+         False for attacks. The default is True.
+    max_removal_rate : float, optional
+        A float between 0 and 1 that represents the maximum node removal rate, 
+        expressed as a fraction of the number of nodes in the graph. The default 
+        value is 0.05.
+    num_points : int, optional
+        The number of different removal rates to generate. The rates 
+        are evenly spaced based on this number. The default value is 20.
     
+    Returns
+    -------
+    frequencies : list of float
+        A list of node removal rates applied to the graph. These values are 
+        evenly spaced between 0 and the specified maximum rate.
+    sizes : list of float
+        A list of the sizes of the largest connected component corresponding to 
+        each node removal rate.
+    
+    Examples
+    --------
+    >>> G = nx.erdos_renyi_graph(100, 0.05)
+    >>> freq, diam = SizeLargestComponent_vs_removals(G, random_removal = True,  max_removal_rate=0.1, num_points=20)
+    >>> print(freq)
+    [0.0, 0.00526316, 0.01052632, ..., 0.1]
+    >>> print(diam)
+    [2.3, 2.5, 2.8, ..., 5.1]
+    
+    Notes
+    -----
+    The function assumes the existence of the `error` and the 'attack' function, such
+    as the 'generate_frequencies' and the `largest_connected_component_size` function.
+    '''
+    number_of_nodes = G.number_of_nodes()
+    frequencies = generate_frequencies(max_removal_rate, num_points)
+    num_removals = (frequencies * number_of_nodes).astype(int)
+
+    # avoid the repetition of equal numbers in num_errors
+    num_removals_cleaned = np.unique(num_removals)
+    frequencies_cleaned = (1/number_of_nodes)*num_removals_cleaned
+    sizes = []
+    
+    if random_removal:
+        
+        for i in num_removals_cleaned:
+            G_error = error(G, i)
+            sizes.append(largest_connected_component_size(G_error))
+     
+    else:
+        
+        for i in num_removals_cleaned:
+            G_attack = attack(G, i)
+            sizes.append(largest_connected_component_size(G_attack))
+            
+    return frequencies_cleaned, sizes
