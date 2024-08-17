@@ -103,7 +103,7 @@ def frequency_network_degree(G):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> degree, frequency = frequency_degree(G)
+    >>> degree, frequency = frequency_network_degree(G)
     >>> print(degree, frequency)
     [1 2] [0.5 0.5] 
 
@@ -364,7 +364,7 @@ def diameter_vs_removals(G, random_removal = 'True', max_removal_rate = 0.05, nu
     Notes
     -----
     The function assumes the existence of an `error` and an 'attack' function, 
-    a `calculate_diameter` and a generate_frequencies function.
+    a `calculate_diameter` and a 'generate_frequencies' function.
     '''
     number_of_nodes = G.number_of_nodes()
     frequencies = generate_frequencies(max_removal_rate, num_points)
@@ -459,7 +459,7 @@ def average_size_connected_components(G):
     >>> G = nx.path_graph(4)
     >>> nx.add_path(G, [10, 11, 12])
     >>> nx.add_path(G, [13])
-    >>> average_size_connected_componets(G)
+    >>> average_size_connected_components(G)
     2
     
     '''
@@ -474,7 +474,9 @@ def average_size_connected_components(G):
     else :
         sizes = [len(c) for c in sorted(nx.connected_components(G), key=len)]
         sizes_without_the_biggest = sizes[:-1]
-        average_size = np.mean(sizes_without_the_biggest)
+        if len(sizes_without_the_biggest) == 0: 
+            average_size = 0
+        else: average_size = np.mean(sizes_without_the_biggest)
     return average_size
     
     
@@ -510,9 +512,9 @@ def SizeLargestComponent_vs_removals(G, random_removal = 'True', max_removal_rat
     frequencies : list of float
         A list of node removal rates applied to the graph. These values are 
         evenly spaced between 0 and the specified maximum rate.
-    sizes : list of float
-        A list of the sizes of the largest connected component corresponding to 
-        each node removal rate.
+    sizes_normalised : list of float
+        A list of the sizes of the largest connected component (normalised w.r.t. 
+        the total number of nodes) corresponding to each node removal rate.
     
     Examples
     --------
@@ -535,18 +537,97 @@ def SizeLargestComponent_vs_removals(G, random_removal = 'True', max_removal_rat
     # avoid the repetition of equal numbers in num_errors
     num_removals_cleaned = np.unique(num_removals)
     frequencies_cleaned = (1/number_of_nodes)*num_removals_cleaned
-    sizes = []
     
+    sizes = np.zeros(len(num_removals_cleaned))
+    index = 0
     if random_removal:
         
         for i in num_removals_cleaned:
             G_error = error(G, i)
-            sizes.append(largest_connected_component_size(G_error))
+            sizes[index] = largest_connected_component_size(G_error)
+            index += 1 
      
     else:
         
         for i in num_removals_cleaned:
             G_attack = attack(G, i)
-            sizes.append(largest_connected_component_size(G_attack))
+            sizes[index] = largest_connected_component_size(G_attack)
+            index += 1
+    
+    sizes_normalised = (1/number_of_nodes)*sizes
+    return frequencies_cleaned, sizes_normalised
+
+def AverageSize_vs_removals(G, random_removal = 'True', max_removal_rate = 0.05, num_points = 20):
+    '''
+    Examine the impact of node removals on the average sizes of the clusters in a network, 
+    calculated excluding the largest component.
+
+    This function generates new versions of the input graph 'G', each subjected
+    to a different node removal rates. The removals can be randomly (error) or 
+    hierarchically (attack) selected depending on the value of 'random_removal': 
+        True for errors
+        False for attacks
+    It then calculates the average sizes of all the clusters of each modified
+    graph and returns the data for further analysis or plotting.
+
+    Parameters
+    ----------
+    G : networkx.classes.graph.Graph
+        The input graph to be analyzed.
+    random_removal : boolean, optional 
+         It represents the nature of the node removals. True for errors and 
+         False for attacks. The default is True.
+    max_removal_rate : float, optional
+        A float between 0 and 1 that represents the maximum node removal rate, 
+        expressed as a fraction of the number of nodes in the graph. The default 
+        value is 0.05.
+    num_points : int, optional
+        The number of different removal rates to generate. The rates 
+        are evenly spaced based on this number. The default value is 20.
+    
+    Returns
+    -------
+    frequencies : list of float
+        A list of node removal rates applied to the graph. These values are 
+        evenly spaced between 0 and the specified maximum rate.
+    average_sizes : list of float
+        A list of the sizes of the largest connected component corresponding to 
+        each node removal rate.
+    
+    Examples
+    --------
+    >>> G = nx.erdos_renyi_graph(100, 0.5)
+    >>> freq, diam = AverageSize_vs_removals(G, random_removal = True,  max_removal_rate=0.1, num_points=20)
+    >>> print(freq)
+    [0.,   0.01, 0.02, ..., 0.1 ]
+    >>> print(diam)
+    [2.3, 2.5, 2.8, ..., 5.1]
+    
+    Notes
+    -----
+    The function assumes the existence of the `error` and the 'attack' function, such
+    as the 'generate_frequencies' and the `average_size_connected_components` function.
+    '''
+    number_of_nodes = G.number_of_nodes()
+    frequencies = generate_frequencies(max_removal_rate, num_points)
+    num_removals = (frequencies * number_of_nodes).astype(int)
+
+    # avoid the repetition of equal numbers in num_errors
+    num_removals_cleaned = np.unique(num_removals)
+    frequencies_cleaned = (1/number_of_nodes)*num_removals_cleaned
+    
+    average_sizes = []
+    
+    if random_removal:
+        
+        for i in num_removals_cleaned:
+            G_error = error(G, i)
+            average_sizes.append(average_size_connected_components(G_error))
+     
+    else:
+        
+        for i in num_removals_cleaned:
+            G_attack = attack(G, i)
+            average_sizes.append(average_size_connected_components(G_attack))
             
-    return frequencies_cleaned, sizes
+    return frequencies_cleaned, average_sizes

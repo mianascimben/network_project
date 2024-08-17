@@ -37,12 +37,12 @@ from functions import fit_data
 #         nx.draw(G, air_pos, node_color='blue', edge_color='gray', node_size=10)
     
 
-def data_fitting_plot(x, y, model, errors=True, ylabel='y', xlabel='x', title='x v/s y'):
+def data_exponential_plot(x, y, errors=True, ylabel='y', xlabel='x', title='x v/s y'):
     '''
     Plots the probability density function (frequency) of the node degrees.
 
     This function generates a log-log plot of the degree distribution of nodes in a graph. 
-    It plots the experimental data and overlays a theoretical model based on the provided parameters.
+    It plots the experimental data and overlays a theoretical exponential model.
     Optionally, it can also display error bands around the theoretical model (3 sigma confidence).
 
     Parameters
@@ -70,8 +70,8 @@ def data_fitting_plot(x, y, model, errors=True, ylabel='y', xlabel='x', title='x
     Examples
     --------
     >>> G = nx.scale_free_graph(N,seed = 10)
-    >>> degree, frequency = frequency_degree(G)
-    >>> fig = pdf_degree_plot(degree, frequency)
+    >>> degree, frequency = frequency_network_degree(G)
+    >>> fig = data_exponential_plot(degree, frequency)
     >>> plt.show()
     '''
     parameters, pcov = fit_data(exp_model, x, y)
@@ -96,16 +96,12 @@ def data_fitting_plot(x, y, model, errors=True, ylabel='y', xlabel='x', title='x
     ax.grid(True)
     return fig
 
-import matplotlib.pyplot as plt
 
-def diameter_error_attack_plot(x1, y1, label1 = 'data1', data2=False, x2=[], y2=[], label2 ='data2', ylabel='y', xlabel='x', title='x v/s y'):
+def plot_of_two_data(x1, y1, label1 = 'data1', data2=False, x2=[], y2=[], label2 ='data2', ylabel='y', xlabel='x', title='x v/s y'):
     '''
     Plots the primary data '(x1, y1)' and, optionally, secondary data '(x2, y2)' if provided.
 
-    This function generates a plot comparing the diameters for networks that have benn 
-    subjected to errors or attacks. The x and y axis are the outputs of the functions 
-    'diameter_vs_error()' and 'diameter_vs_attack()'.
-    
+    This function generates a plot including the primary data and the secondary ones.
 
     Parameters
     ----------
@@ -137,19 +133,18 @@ def diameter_error_attack_plot(x1, y1, label1 = 'data1', data2=False, x2=[], y2=
 
     Examples
     --------
-    >>> x1 = [1, 2, 3, 4]
-    >>> y1 = [10, 20, 25, 30]
-    >>> x2 = [1, 2, 3, 4]
-    >>> y2 = [12, 22, 27, 35]
-    >>> fig = diameter_error_attack_plot(x1, y1, data2=True, x2=x2, y2=y2, ylabel='Diameter', xlabel='Errors', title='Diameter Error vs Attack')
+    >>> frequency_of_error, diameter_attack_ER =  diameter_vs_removals(erdos_renyi_net, True)
+    >>> frequency_of_attack, diameter_attack_ER = diameter_vs_removals(erdos_renyi_net, False)
+    >>> 
+    >>> fig = plot_of_two_data(frequency_of_error, diameter_attack_ER, data2=True, frequency_of_attack, diameter_attack_ER, ylabel='Diameter', xlabel='Frequency', title='Diameter Error vs Attack')
     >>> plt.show()
     '''
     fig, ax = plt.subplots()
     
-    ax.plot(x1, y1, label = label1, color='blue', marker='o')
+    ax.plot(x1, y1, label = label1, color='blue', marker='o', linestyle='--')
     
     if data2:
-        ax.plot(x2, y2, label = label2, color='red', marker='o')
+        ax.plot(x2, y2, label = label2, color='blue', marker='s')
     
     ax.set_title(title)
     ax.set_xlabel(xlabel)
@@ -157,4 +152,4 @@ def diameter_error_attack_plot(x1, y1, label1 = 'data1', data2=False, x2=[], y2=
     ax.legend()
     ax.grid(True)
     
-    return fig
+    return fig, ax
