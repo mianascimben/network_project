@@ -6,30 +6,9 @@ Created on Tue Aug 13 10:33:18 2024
 """
 
 import networkx as nx
-import random
 import numpy as np
 import matplotlib.pyplot as plt
 
-#reproducibility
-seed = 1
-random.seed(seed)
-np.random.seed(seed)
-
-#G = nx.erdos_renyi_graph(1000, 0.4, False)
-G = nx.barabasi_albert_graph(1000, 2)
-
-# for SIR better 10^-2 
-p_t = 0.07
-p_r = 0.04
-p_i = 0.04
-duration = 500
-# healthy
-state = np.zeros(G.number_of_nodes())
-
-# the first infected
-index_infected = random.sample(range(G.number_of_nodes()),1)
-
-state[index_infected] = 1
 
 def evolution_epidemy_SIS(G, starting_state, p_t, p_r, duration, plot_spread = False):
     
@@ -226,7 +205,7 @@ def duration_epidemy (function, N, threshold = 0.05):
 def half_life (function):
     
     maximum = peak(function)
-    max_index = np.where(funtion == maximum)
+    max_index = np.where(function == maximum)
     indices = np.where(function >= maximum/2)[0]
     half_life_growth = indices[0] - max_index
     half_life_decay = indices[-1] - max_index
@@ -254,6 +233,8 @@ def total_infected_percentage(infection_function, recovery_function):
         The second output of the function 'evolution_epidemy_SIR()'
     Returns
     -------
+    numpy.float64
+        The percentage of nodes that have been infected during the epidemy
     
     '''
     
