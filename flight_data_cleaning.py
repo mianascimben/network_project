@@ -6,7 +6,7 @@ Created on Tue Jun 11 18:16:01 2024
 
 Downloading data of flight trasportation, cleaning them and creation of a graph 
 """
-
+import os
 import pandas as pd
 import networkx as nx
 import zipfile
@@ -14,7 +14,7 @@ import pickle
 
 
 # Path al file ZIP
-zip_path = 'C:/Users/mima/Desktop/network-project/archive.zip'
+zip_path = os.path.join('data', 'airports_network.zip')
 
 # open zip file and read the CSV
 with zipfile.ZipFile(zip_path, 'r') as z:
