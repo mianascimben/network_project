@@ -1,17 +1,17 @@
-
+# -*- coding: utf-8 -*-
 """
-Created on Sun Jun 16 11:08:45 2024
+Created on Thu Aug 29 16:24:11 2024
 
 @author: mima
 """
 
-# here we study ER and scale_free_net networks and we get the result of the paper
-#import numpy as np
 import networkx as nx
+import numpy as np
 #import matplotlib.pyplot as plt
 import random 
 import time 
-from functions import diameter_vs_removals, SizeLargestComponent_vs_removals, AverageSize_vs_removals
+from Tolerance_Simulation import *
+from functions import *
 from plot_functions import plot_of_two_data
 
 start = time.time()
@@ -22,61 +22,52 @@ seed = 102
 
 # for reproducibility
 random.seed(seed)
+np.random.seed(seed)
 
+#G = nx.random_regular_graph(int(k), N)
 erdos_renyi_net = nx.erdos_renyi_graph(N, p, directed=False)
 # set k/2 because the graph is undirected
 scale_free_net = nx.barabasi_albert_graph(N, int(k/2))
 
-nx.draw(erdos_renyi_net)
-#nx.draw(scale_free_net)
+Tol_Sim_ER = ToleranceSimulation(erdos_renyi_net, max_removal_rate = 0.5)
+Tol_Sim_SF = ToleranceSimulation(scale_free_net, max_removal_rate = 0.5)
 
-# check the degree distribution by plot
+freq, d_attack_ER = Tol_Sim_ER.graph_property_vs_removals(get_diameter, attack)
+_, d_error_ER = Tol_Sim_ER.graph_property_vs_removals(get_diameter, error)
 
-#degree_ER, freq_ER = frequency_network_degree(erdos_renyi_net)
+_, d_attack_SF = Tol_Sim_SF.graph_property_vs_removals(get_diameter, attack)
+_, d_error_SF = Tol_Sim_SF.graph_property_vs_removals(get_diameter, error)
 
-
-#get the data for the diameter plot
-freq_error_ER, d_error_ER = diameter_vs_removals(erdos_renyi_net, True, 0.5)
-freq_error_SF, d_error_SF = diameter_vs_removals(scale_free_net, True, 0.5)
-freq_attack_ER, d_attack_ER = diameter_vs_removals(erdos_renyi_net, False, 0.5)
-freq_attack_SF, d_attack_SF = diameter_vs_removals(scale_free_net, False, 0.5)
-
-#get the data for the size plot
-
-freq_error_ER, sizes_error_ER =SizeLargestComponent_vs_removals(erdos_renyi_net, True, 0.5)
-freq_error_SF, sizes_error_SF = SizeLargestComponent_vs_removals(scale_free_net, True, 0.5)
-freq_attack_ER, sizes_attack_ER = SizeLargestComponent_vs_removals(erdos_renyi_net, False, 0.5)
-freq_attack_SF, sizes_attack_SF = SizeLargestComponent_vs_removals(scale_free_net, False, 0.5)
-
-# get the data for the average size plot
-
-freq_error_ER, average_size_error_ER =AverageSize_vs_removals(erdos_renyi_net, True, 0.5)
-freq_error_SF, average_size_error_SF = AverageSize_vs_removals(scale_free_net, True, 0.5)
-freq_attack_ER, average_size_attack_ER = AverageSize_vs_removals(erdos_renyi_net, False, 0.5)
-freq_attack_SF, average_size_attack_SF = AverageSize_vs_removals(scale_free_net, False, 0.5)
-
-# plot for the diameter
-fig, ax = plot_of_two_data(freq_error_ER, d_error_ER, 'error on Erdos Renyi net', True, freq_error_SF, d_error_SF, label2 = 'error on Scale Free net', ylabel='Diamater', xlabel='Frequency', title = 'Diameter v/s Frequency of removals')   
-ax.plot(freq_attack_ER, d_attack_ER, label = 'attack on Erdos Renyi net', color='red', marker='o', linestyle ='--')
-ax.plot(freq_attack_SF, d_attack_SF, label = 'attack on Scale Free net', color='red', marker='s')
+fig, ax = plot_of_two_data(freq, d_error_ER, 'error on Erdos Renyi net', True, freq, d_error_SF, label2 = 'error on Scale Free net', ylabel='Diamater', xlabel='Frequency', title = 'Diameter v/s Frequency of removals')   
+ax.plot(freq, d_attack_ER, label = 'attack on Erdos Renyi net', color='red', marker='o', linestyle ='--')
+ax.plot(freq, d_attack_SF, label = 'attack on Scale Free net', color='red', marker='s')
 ax.legend()
 
-# plot for the S
-fig, ax = plot_of_two_data(freq_error_ER, sizes_error_ER, 'error on Erdos Renyi net', True, freq_error_SF, sizes_error_SF, label2 = 'error on Scale Free net', ylabel='S', xlabel='Frequency', title = 'S v/s Frequency of removals')   
-ax.plot(freq_attack_ER, sizes_attack_ER, label = 'attack on Erdos Renyi net', color='red', marker='o', linestyle ='--')
-ax.plot(freq_attack_SF, sizes_attack_SF, label = 'attack on Scale Free net', color='red', marker='s')
-ax.legend()
+#_____________________________________________________________________________
 
-# plot for the S and <s> for ER
-fig, ax = plot_of_two_data(freq_error_ER, sizes_error_ER, 'S vs error', True, freq_error_ER, average_size_error_ER, label2 = '<s> vs error', ylabel='S, <s>', xlabel='Frequency', title = 'Erdos Renyi: S and <s>')   
-ax.plot(freq_attack_ER, sizes_attack_ER, label = 'S v/s attack', color='red', marker='o', linestyle ='--')
-ax.plot(freq_attack_ER, average_size_attack_ER, label = '<s> v/s attack', color='red', marker='s')
+
+freq, S_attack_ER = Tol_Sim_ER.graph_property_vs_removals(largest_connected_component_size, attack)
+_, S_error_ER = Tol_Sim_ER.graph_property_vs_removals(largest_connected_component_size, error)
+
+_, S_attack_SF = Tol_Sim_SF.graph_property_vs_removals(largest_connected_component_size, attack)
+_, S_error_SF = Tol_Sim_SF.graph_property_vs_removals(largest_connected_component_size, error)
+
+
+freq, s_attack_ER = Tol_Sim_ER.graph_property_vs_removals(average_size_connected_components, attack)
+_, s_error_ER = Tol_Sim_ER.graph_property_vs_removals(average_size_connected_components, error)
+
+_, s_attack_SF = Tol_Sim_SF.graph_property_vs_removals(average_size_connected_components, attack)
+_, s_error_SF = Tol_Sim_SF.graph_property_vs_removals(average_size_connected_components, error)
+
+
+fig, ax = plot_of_two_data(freq, S_error_ER, 'S vs error', True, freq, s_error_ER, label2 = '<s> vs error', ylabel='S, <s>', xlabel='Frequency', title = 'Erdos Renyi: S and <s>')   
+ax.plot(freq, S_attack_ER, label = 'S v/s attack', color='red', marker='o', linestyle ='--')
+ax.plot(freq, s_attack_ER, label = '<s> v/s attack', color='red', marker='s')
 ax.legend()
 
 # plot for the S and <s> for SF
-fig, ax = plot_of_two_data(freq_error_SF, sizes_error_SF, 'S vs error', True, freq_error_SF, average_size_error_SF, label2 = '<s> vs error', ylabel='S, <s>', xlabel='Frequency', title = 'Scale Free: S and <s>')   
-ax.plot(freq_attack_SF, sizes_attack_SF, label = 'S v/s attack', color='red', marker='o', linestyle ='--')
-ax.plot(freq_attack_SF, average_size_attack_SF, label = '<s> v/s attack', color='red', marker='s')
+fig, ax = plot_of_two_data(freq, S_error_SF, 'S vs error', True, freq, s_error_SF, label2 = '<s> vs error', ylabel='S, <s>', xlabel='Frequency', title = 'Scale Free: S and <s>')   
+ax.plot(freq, S_attack_SF, label = 'S v/s attack', color='red', marker='o', linestyle ='--')
+ax.plot(freq, s_attack_SF, label = '<s> v/s attack', color='red', marker='s')
 ax.legend()
-
-time.time()-start
+print(time.time()-start)
