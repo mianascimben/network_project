@@ -9,8 +9,8 @@ This code comprehends the plots of the analysis.
 import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
-from functions import exp_model
-from functions import fit_data
+#from functions import exp_model
+#from functions import fit_data
 
 #this has to be fixed, I m not sure we need it. 
 # def network_plot(G, draw_edges = True):

@@ -10,7 +10,7 @@ import numpy as np
 #import matplotlib.pyplot as plt
 import random 
 import time 
-from Tolerance_Simulation import *
+from .Tolerance_Simulation import *
 from functions import *
 from plot_functions import plot_of_two_data
 

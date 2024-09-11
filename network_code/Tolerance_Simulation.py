@@ -1,19 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import numpy as np
 import networkx as nx
+import numpy as np
 import inspect
 import matplotlib.pyplot as plt
 
-#from epidemy_functions import evolution_epidemy_SIR
 
 class GetRemotionFrequencies: 
     '''
     A class to calculate remotion frequencies of network nodes
 
     The number of frequencies calculated is set by 'num_points' and they are
-    evenly distant in the range [0, max_removal_rate]
-    
     Attributes:
     ----------
     max_removal_rate : float
@@ -181,8 +178,6 @@ class EpidemicData():
         The duration of the epidemic simulation.
     infected_t0 : int
         The initial number of infected nodes.
-    starting_state : numpy.ndarray
-        The initial state of the nodes (infected or not).
     
     Methods:
     -------
@@ -224,7 +219,7 @@ class EpidemicData():
         self.p_i = p_i
         self.duration = duration
         self.infected_t0 = infected_t0
-        self.starting_state = self.first_infection()
+        
         
     def first_infection(self):
         '''
@@ -263,7 +258,7 @@ class EpidemicData():
            The array of immunization rates over time.
         
        '''
-        state = np.copy(self.starting_state) # to not work on the original starting state, but on its copy
+        state =  self.first_infection()
         
         if plot_spread:
             pos = nx.kamada_kawai_layout(G)  # fixed layout for the graph
@@ -274,7 +269,7 @@ class EpidemicData():
             
         infection_rate = []
         immunized_rate = []
-        for i in range(1, self.duration + 1):
+        for time in range(1, self.duration + 1):
             
             infected_state = self.infection_with_for(G, state)
         
@@ -287,7 +282,7 @@ class EpidemicData():
             if plot_spread:
                 node_colors = ['red' if immunized_state[node] == 1 else 'green' if immunized_state[node] == -1 else 'skyblue' for node in G.nodes()]
                 nx.draw(G, pos, with_labels=True, node_color=node_colors)
-                plt.title(f"Time = {i}")
+                plt.title(f"Time = {time}")
                 plt.show()
                 
         return np.array(infection_rate), np.array(immunized_rate)
@@ -424,7 +419,7 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
         self.G = G
         
         
-    def epidemic_property_vs_removals(self, property_function, removal_function, *args, **kwargs):
+    def epidemic_property_vs_removals(self, property_function, removal_function, num_simulations, plot = False,  *args, **kwargs):
         '''
         Simulates the effect of node removals on an epidemic and calculates the specified property.
 
@@ -437,6 +432,9 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
             A function that calculates a specific property of the epidemic (e.g., infection rate).
         removal_function : function
             A function that removes nodes from the network.
+        num_simulation: int
+            The number of simulations to run for each removal stage, allowing for the averaging of results 
+            to account for the randomness in epidemic spreading.
         *args : tuple
             Additional arguments to pass to the property function.
         **kwargs : dict
@@ -451,42 +449,43 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
             
         Notes
         -----
-        The property_function has some restrictions about its input: the code has been
-        created for property functions that always work on the function of infection.
-        Anyway, they can work even with the function of immunisation, without expliciting it,
-        and/or others parameters which must be specified. 
+        The 'property_function' has some restrictions about its input: it is expected to handle the infection 
+        evolution over time. However, it can also handle the immunization evolution or other parameters, depending on the specific function used.
+
         
         Examples
         --------
         >>> G = nx.erdos_renyi_graph(100, 0.05)
-        >>> freq, duration = EpidemicToleranceSimulation(G, num_points = 5).epidemic_property_vs_removals(duration_epidemic, attack)
+        >>> simulation = EpidemicToleranceSimulation(G, p_t=0.15, p_i=0.05, duration=50, infected_t0=1, num_points=5)
+        >>> freq, duration = simulation.epidemic_property_vs_removals(epidemic_duration, attack, num_simulations=10)
         >>> freq
         array([0.  , 0.01, 0.02, 0.03, 0.05])
         >>> duration
-        ['Epidemic never started', 9, 9, 9, 9]
+        [45.1, 50.0, 35.8, 50.0, 50.0]
         '''
-        # Ottieni la firma della property_function
+        # check which data the 'property_function' requires
         sig = inspect.signature(property_function)
         param_names = sig.parameters.keys()
         
         property_values = []
          
-        for i in self.num_removals_cleaned:
-            G_modified = removal_function(self.G, i)
-            infected, immunized = self.epidemic_data.evolution_epidemy_SIR(G_modified)
-            #property_values.append(property_function(infected))#check
-            # Prepariamo gli argomenti da passare
-            infected  # Sempre passiamo "infected"
-            # Aggiungi immunized se richiesto dalla funzione
-            if 'recovery_function' in param_names:
+        for num_removed_nodes in self.num_removals_cleaned:
+            G_modified = removal_function(self.G, num_removed_nodes)
+            
+            infected = np.zeros((num_simulations, self.epidemic_data.duration))
+            immunized = np.zeros((num_simulations, self.epidemic_data.duration))
+            
+            for simulation in range(num_simulations): 
+                infected[simulation, :], immunized[simulation, :] = self.epidemic_data.evolution_epidemy_SIR(G_modified, plot)
+            
+            # Calculate the epidemic property based on whether the property function requires recovery evolution
+            if 'recovery_evolution' in inspect.signature(property_function).parameters:
                 result = property_function(infected, immunized, *args, **kwargs)
             else:
                 result = property_function(infected, *args, **kwargs)
-            
+                            
             property_values.append(result)
-            
+                            
+        
         return self.frequencies_cleaned, property_values
     
-        
-        
-

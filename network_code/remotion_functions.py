@@ -49,7 +49,7 @@ def attack(G, num_attacks = 1):
     G_with_attacks.remove_nodes_from(top_n_nodes)
     
     return G_with_attacks
-
+    
 def error(G, num_errors = 1):
     '''
     Perform multiple errors on a copy of the input graph 'G' by randomly 

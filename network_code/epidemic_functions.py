@@ -40,19 +40,19 @@ import matplotlib.pyplot as plt
 #     return np.array(infection_rate)
     
      
-def FWHM(infection_function):
+def FWHM(infection_evolution):
     '''
-    Calculates the Full Width at Half Maximum (FWHM) of the infection function..
+    Calculates the Full Width at Half Maximum (FWHM) of the infection evolution..
 
     Parameters:
     ----------
-    infection_function : numpy.ndarray
-        The array representing the infection function over time.
+    infection_evolution : numpy.ndarray
+        The array representing the infection evolution over time.
 
     Returns:
     -------
     fwhm : int
-        The width of the infection function at half of its maximum value, in terms of time steps.
+        The width of the infection evolution at half of its maximum value, in terms of time steps.
     
     Examples
     --------
@@ -62,138 +62,172 @@ def FWHM(infection_function):
     
     '''
     
-    half_max = peak(infection_function)[0] / 2
+    half_max = peak(infection_evolution)[0] / 2
 
     # Find where the data crosses half maximum
-    indices = np.where(infection_function >= half_max)[0]
+    indices = np.where(infection_evolution >= half_max)[0]
     
     # as the time-steps go on by 1, the x-axis corresponds to the indeces
     fwhm = indices[-1] - indices[0]
     
     return fwhm 
 
-def peak(infection_function):
+def peak(infection_evolution):
     '''
-    Finds the peak value of the infection function and its corresponding index.
+    Finds the peak value of the infection evolution and its corresponding time index.
+    
+    If the input is a 1D array, it finds the peak for that single simulation.
+    If the input is a 2D array, it finds the average peak over the simulations (row).
 
     Parameters:
     ----------
-    infection_function : numpy.ndarray
-        The array representing the infection function over time.
+    infection_matrix : numpy.ndarray
+        A 1D array (single simulation) or 2D array (multiple simulations) where each row 
+        represents a simulation and each column represents the infection evolution over time.
 
     Returns:
     -------
-    maximum : float
-        The maximum value of the infection function.
-    index_maximum : numpy.ndarray
-        The index (or indices) where the maximum value occurs.
-        
+    peak : numpy.ndarray or float
+        If the input is 1D, returns the peak value as a float.
+        If the input is 2D, returns the average peak over the number of simulations.
     '''
-    maximum = np.max(infection_function)
-    index_maximum = np.where(infection_function == maximum)
-    return maximum, index_maximum
+    
+    # If the input is a 1D array, convert it to a 2D matrix with a single row
+    if infection_evolution.ndim == 1:
+        infection_evolution = infection_evolution[np.newaxis, :]
+    
+    # Find the maximum value for each row (simulation)
+    peaks = np.max(infection_evolution, axis=1)
+    
+    # If the original input was 1D, return a single value instead of an array
+    # If it was 2D, return the average value over all the simulation
+    if peaks.size == 1:
+        return peaks[0]
+    else: 
+        return np.mean(peaks)
 
-def epidemic_duration (infection_function):
+def t_peak(infection_evolution):
     '''
-    Calculates the duration of the epidemic based on the infection function.
+    Finds the time step at which the peak of the infection evolution occurs.
+
+    If the input is a 1D array, it finds the time step for that single simulation.
+    If the input is a 2D array, it finds the average time step over the simulations (rows) where the peak occurs.
+
+    Parameters:
+    ----------
+    infection_evolution : numpy.ndarray
+        A 1D array (single simulation) or a 2D array (multiple simulations) where each row 
+        represents a simulation and each column represents the infection evolution over time.
+
+    Returns:
+    -------
+    t_peak : numpy.ndarray or float
+        If the input is 1D, returns the time step (index) where the peak occurs as an integer.
+        If the input is 2D, returns the average time step across all simulations where the peak occurs.
+    '''
+    
+    # If the input is a 1D array, convert it to a 2D matrix with a single row
+    if infection_evolution.ndim == 1:
+        infection_evolution = infection_evolution[np.newaxis, :]
+    
+    # Find the time step (index) of the maximum value for each row (simulation)
+    indices_maximum = np.argmax(infection_evolution, axis=1)
+    
+    # If the original input was 1D, return a single index value
+    if indices_maximum.size == 1:
+        return indices_maximum[0]
+    else:
+        # For 2D input, return the average index where the peak occurs
+        return np.mean(indices_maximum)
+
+def epidemic_duration (infection_evolution):
+    '''
+    Calculates the duration of the epidemic based on the infection evolution.
 
     The duration is determined as the time between the first and last non-zero infection values.
 
-    Parameters:
-    ----------
-    infection_function : numpy.ndarray
-        The array representing the infection function over time.
+    Calculates the duration of the epidemic for each simulation based on the infection evolution.
 
-    Returns:
-    -------
-    duration : int or str
-        The duration of the epidemic in terms of time steps. If the epidemic never started,
-        returns the string "Epidemic never started".
-        
-    '''
-    
-    indices = np.where(infection_function > 0)[0]
-    
-    #check if there are indices or not
-    if len(indices) > 1:
-        duration = indices[-1] - indices[0] + 1 #it starts from zero, not from 1
-    else: duration = "Epidemic never started"
-        
-    return duration
-
-def half_life (infection_function):
-    '''
-    Calculates the half-life of the epidemic's growth and decay phases.
-
-    The half-life is the time it takes for the infection function to reach half of its peak value 
-    during the growth and decay phases.
+    If the input is a 1D array, it calculates the duration for that single simulation.
+    If the input is a 2D array, it calculates the duration for each simulation (row) and return the 
+    mean duration over the number of simulations.
 
     Parameters:
     ----------
-    infection_function : numpy.ndarray
-        The array representing the infection function over time.
+    infection_evolution : numpy.ndarray
+        A 1D array (single simulation) or 2D array (multiple simulations) where each row 
+        represents a simulation and each column represents the infection evolution over time.
 
     Returns:
     -------
-    half_life_growth : int
-        The time it takes for the infection function to grow from zero to half of its maximum value.
-    half_life_decay : int
-        The time it takes for the infection function to decay from its maximum value to half.
-
-    Notes
-    -----
-    This function handle just functions that have these features:
-        -just one global maximum
-        -if local maxima are present, either their peak value is less than the half of the heighest peak
-         or the function, between the local and the global maximum, is always above the global peak.  
+    duration : numpy.ndarray or int
+        If the input is 1D, returns the duration as an integer.
+        If the input is 2D, returns the average duration over all the simulations.
+        If an epidemic never started, the duration will be 0.
     '''
-
-    maximum, max_index = peak(infection_function)
-    indices = np.where(infection_function >= maximum/2)[0]
     
-    # cases to distinguish the presence or not of both the half-lifes  
-    if len(indices) > 2: #we must take into account the max_index within indices array 
-        half_life_growth = indices[0] - max_index
-        half_life_decay = indices[-1] - max_index
-    elif len(indices) == 2:
-        if indices[0] == max_index:  #too sharp growth to be recorded
-            half_life_growth = 0
-            half_life_decay = indices 
-        else:                        #too sharp decay to be recorded
-            half_life_growth = indices
-            half_life_decay = 0
+    # If the input is a 1D array, convert it to a 2D matrix with a single row
+    # This allows the same code to compute the duration for both 1D arrays and 
+    # 2D matrices.
+    if infection_evolution.ndim == 1:
+        infection_evolution = infection_evolution[np.newaxis, :]
+    
+    durations = np.count_nonzero(infection_evolution, axis=1)
+    
+    # If the original input was 1D, return a single value instead of an array
+    # If it was 2D, return the average value over all the simulation
+    if durations.size == 1:
+        return  durations[0]
     else: 
-        half_life_growth = 0
-        half_life_decay = 0
-        print("There has been no epidemic")
+        return np.mean(durations)
+    
 
-    return half_life_growth, half_life_decay 
 
-def total_infected_percentage(infection_function, recovery_function):
+def total_infected_percentage(infection_evolution, recovery_evolution):
     ''' 
-    Calculate the total number of nodes that have been infected during the 
-    epidemy. The value is expressed in percentage. 
-    
-    This funtion works for results obtained by SIR model, as it considers
-    the sum between the value of the recovered nodes and the infected nodes 
-    at the end of the epidemy. 
-    
-    
+    Calculates the total percentage of nodes that have been infected during the 
+    epidemic, considering both the infected and recovered nodes.
+
+    This function works with results obtained from the SIR model, as it considers
+    the sum of the values of recovered and infected nodes at the end of the epidemic.
+
     Parameters
     ----------
-    infection_function : numpy.ndarray
-        Array with the percentage of infected nodes in time. 
-        The first output of the function 'evolution_epidemy_SIR()'
+    infection_evolution : numpy.ndarray
+        A 1D array (single simulation) or 2D array (multiple simulations) representing 
+        the percentage of infected nodes over time. 
+        The first output of the function 'evolution_epidemy_SIR()'.
         
-    recovery_function : numpy.ndarray
-        Array with the percentage of recovered nodes in time. 
-        The second output of the function 'evolution_epidemy_SIR()'
+    recovery_evolution : numpy.ndarray
+        A 1D array (single simulation) or 2D array (multiple simulations) representing 
+        the percentage of recovered nodes over time. 
+        The second output of the function 'evolution_epidemy_SIR()'.
+        
     Returns
     -------
     numpy.float64
-        The percentage of nodes that have been infected during the epidemy
+        The average percentage of nodes that have been infected during the epidemic 
+        across all simulations (or just the percentage for a single simulation).
     
+    Examples
+    --------
+    >>> infected = np.array([0, 20, 50, 30, 10])
+    >>> recovered = np.array([0, 10, 20, 50, 90])
+    >>> total_infected_percentage(infected, recovered)
+    100.0
+    
+    >>> infected = np.array([[0, 20, 50, 40, 10], [0, 15, 35, 40, 20]])
+    >>> recovered = np.array([[0, 10, 20, 30, 40], [0, 5, 30, 40, 80]])
+    >>> total_infected_percentage(infected, recovered)
+    75.0
     '''
-    
-    return  infection_function[-1] + recovery_function[-1]
+    # If the input is a 1D array, convert it to a 2D matrix with a single row
+    # This allows the same code to compute the duration for both 1D arrays and 
+    # 2D matrices.
+    if infection_evolution.ndim == 1 and recovery_evolution.ndim == 1:
+        infection_evolution = infection_evolution[np.newaxis, :]
+        recovery_evolution = recovery_evolution[np.newaxis, :]
+        
+    totals = infection_evolution[:,-1] + recovery_evolution[:,-1]
+    return  np.mean(totals)
     
