@@ -1,41 +1,7 @@
-
-"""
-Created on Thu Jun 20 09:13:43 2024
-
-@author: mima
-
-This code comprehends the plots of the analysis.
-"""
 import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
-#from functions import exp_model
-#from functions import fit_data
 
-#this has to be fixed, I m not sure we need it. 
-# def network_plot(G, draw_edges = True):
-#     '''
-#     Visualization of the network passed as input.
-    
-#     The figure represents a scatter plot of the network nodes
-#     with the optional addiction of edges.
-    
-#     Prameters 
-#     ---------
-#     G : networkx.classes.graph.Graph
-#         Input graph to be visualized
-#     draw_edges : boolean, optional.
-#         Whether to draw network edges. The default is True. 
-#     Returns
-#     -------
-#     fig: plot of the network in input in a scatter plot.
-#     '''
-    
-#     fig = plt.scatter('Longitude', 'Latitude', data = airports_clean, s=8,)
-    
-#     if draw_edges:
-#         nx.draw(G, air_pos, node_color='blue', edge_color='gray', node_size=10)
-    
 
 def data_exponential_plot(x, y, errors=True, ylabel='y', xlabel='x', title='x v/s y'):
     '''
@@ -106,11 +72,11 @@ def plot_of_two_data(x1, y1, label1 = 'data1', data2=False, x2=[], y2=[], label2
     Parameters
     ----------
     x1 : array-like
-        The x-coordinates of the primary data points. The first output of 'diameter_vs_error/attack()'
+        The x-coordinates of the primary data points. 
     y1 : array-like
-        The y-coordinates of the primary data points. The second output of 'diameter_vs_error/attack()'
+        The y-coordinates of the primary data points. 
     label1 : str, optional
-        The label for the primary data data points. The default is 'data1'.
+        The label for the primary data points. The default is 'data1'.
     data2 : bool, optional
         If True, plots the secondary data. The default is False.
     x2 : array-like, optional
@@ -131,20 +97,13 @@ def plot_of_two_data(x1, y1, label1 = 'data1', data2=False, x2=[], y2=[], label2
     fig : matplotlib.figure.Figure
         The matplotlib figure object containing the plot.
 
-    Examples
-    --------
-    >>> frequency_of_error, diameter_attack_ER =  diameter_vs_removals(erdos_renyi_net, True)
-    >>> frequency_of_attack, diameter_attack_ER = diameter_vs_removals(erdos_renyi_net, False)
-    >>> 
-    >>> fig = plot_of_two_data(frequency_of_error, diameter_attack_ER, data2=True, frequency_of_attack, diameter_attack_ER, ylabel='Diameter', xlabel='Frequency', title='Diameter Error vs Attack')
-    >>> plt.show()
     '''
     fig, ax = plt.subplots()
     
     ax.plot(x1, y1, label = label1, color='blue', marker='o', linestyle='--')
     
     if data2:
-        ax.plot(x2, y2, label = label2, color='blue', marker='s')
+        ax.plot(x2, y2, label = label2, color='blue', marker='s', linestyle='--')
     
     ax.set_title(title)
     ax.set_xlabel(xlabel)
