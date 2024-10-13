@@ -1,65 +1,82 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Aug  7 15:17:06 2024
-
-@author: mima
-"""
-import pandas as pd
-import networkx as nx
-import zipfile
 import pickle
-from functions import diameter_vs_removals, SizeLargestComponent_vs_removals, AverageSize_vs_removals
+import random 
+from graph_property_functions import get_diameter, largest_connected_component_size, average_size_connected_components
+from tolerance_simulation import ToleranceSimulation, EpidemicToleranceSimulation
+from epidemic_functions import *
+from remotion_functions import error, attack
 from plot_functions import plot_of_two_data
 
-
-'''
-# Path al file ZIP
-zip_path = 'C:/Users/mima/Desktop/network-project/archive.zip'
-
-# open zip file and read the CSV
-with zipfile.ZipFile(zip_path, 'r') as z:
-    with z.open('routes.csv') as file1:
-        routes=pd.read_csv(file1, delimiter=',', na_values=r'\N')
-    with z.open('airports.csv') as file2:
-        airports=pd.read_csv(file2, delimiter=',', na_values=r'\N')
-
-# cleaning data: erase routes if the source or the destination is NAN
-routes_clean = routes.dropna(subset=['Source airport ID', 'Destination airport ID'])
-# cleaning data: erase all airport information if its ID is NAN
-airports_clean = airports.dropna(subset = ['Airport ID'])
-
-routes_clean2 = routes_clean.drop(routes_clean[~routes_clean['Source airport ID'].isin(airports_clean['Airport ID']) | ~routes_clean['Destination airport ID'].isin(airports_clean['Airport ID'])].index)
-
-#creation of the dictionary for the airports positions
-air_pos = dict(zip(airports_clean['Airport ID'], zip(airports_clean['Longitude'], airports_clean['Latitude'])))
-
-# creation of a graph
-G = nx.from_pandas_edgelist(routes_clean2, source = 'Source airport ID', target = 'Destination airport ID')
-
-with open('flight.gpickle', 'wb') as f:
-    pickle.dump(G, f, pickle.HIGHEST_PROTOCOL)
-'''    
+# Download the dataset for the airports
+with open('flight.gpickle', 'rb') as f:
+    G = pickle.load(f)
 
 air_traffic_net = G
 
+# for reproducibility
+seed = 102
+random.seed(seed)
+np.random.seed(seed)
+
+# constants for epidemic simulation
+p_t = 0.2
+p_i = 0.05
+duration =50
+infected_t0 = 1
+
+num_simulations = 100  # Number of simulations to run
+num_points = 15
+
+## graph feature analysis
+tol_sim = ToleranceSimulation(air_traffic_net, 0.5)
+
 # data for the diameter
-freq_error, d_error = diameter_vs_removals(air_traffic_net, True)
-freq_attack, d_attack = diameter_vs_removals(air_traffic_net, False)
+freq, d_error = tol_sim.graph_property_vs_removals(get_diameter, error)
+_, d_attack = tol_sim.graph_property_vs_removals(get_diameter, attack)
 
-# plot of diameter
-fig, ax = plot_of_two_data(freq_error, d_error, 'error', True, freq_attack, d_attack, label2 = 'attack', ylabel='Diamater', xlabel='Frequency', title = 'Diameter v/s Frequency of removals')   
+fig, ax = plot_of_two_data(freq, d_error, 'error', True, freq, d_attack, label2 = 'attack', ylabel='Diameter', xlabel='Frequency', title = 'Diameter v/s Frequency of removals')   
 
-#data for the size 
-freq_error, sizes_error =SizeLargestComponent_vs_removals(air_traffic_net, True, 0.5)
-freq_attack, sizes_attack = SizeLargestComponent_vs_removals(air_traffic_net, False, 0.5)
+# data for S
+freq, S_error = tol_sim.graph_property_vs_removals(largest_connected_component_size, error)
+_, S_attack = tol_sim.graph_property_vs_removals(largest_connected_component_size, attack)
 
-# get the data for the average size plot
-freq_error, average_size_error =AverageSize_vs_removals(air_traffic_net, True, 0.5)
-freq_attack, average_size_attack = AverageSize_vs_removals(air_traffic_net, False, 0.5)
+# data for <s>
+freq, s_error = tol_sim.graph_property_vs_removals(average_size_connected_components, error)
+_, s_attack = tol_sim.graph_property_vs_removals(average_size_connected_components, attack)
 
-# plot of S and <s>
-
-fig, ax = plot_of_two_data(freq_error, sizes_error, 'S vs error', True, freq_error, average_size_error, label2 = '<s> vs error', ylabel='S, <s>', xlabel='Frequency', title = 'Erdos Renyi: S and <s>')   
-ax.plot(freq_attack, sizes_attack, label = 'S v/s attack', color='red', marker='o', linestyle ='--')
-ax.plot(freq_attack, average_size_attack, label = '<s> v/s attack', color='red', marker='s')
+fig, ax = plot_of_two_data(freq, S_error, 'S v/s error', True, freq, S_attack, label2 = 'S v/s attack', ylabel='S', xlabel='Frequency', title = 'S, <s> v/s Frequency of removals')   
+ax.plot(freq, s_error, label = '<s> v/s error', color='blue', marker='s')
+ax.plot(freq, s_attack, label = '<s> v/s attack', color='red', marker='s')
 ax.legend()
+
+
+## epidemic simulation 
+epi_sim = EpidemicToleranceSimulation(air_traffic_net, p_t, p_i, duration, infected_t0, 0.5, num_points)
+
+
+# data for the total infected
+freq2, infected_error = epi_sim.epidemic_property_vs_removals(total_infected_percentage, error, num_simulations)
+_, infected_attack = epi_sim.epidemic_property_vs_removals(total_infected_percentage, attack, num_simulations)
+
+fig, ax = plot_of_two_data(freq2, infected_error, 'error', True, freq2, infected_attack, label2 = 'attack', ylabel='Total infected', xlabel='Frequency', title = 'Total infected v/s Frequency of removals')   
+
+
+# data for the epidemic duration
+freq2, duration_error = epi_sim.epidemic_property_vs_removals(epidemic_duration, error, num_simulations)
+_, duration_attack = epi_sim.epidemic_property_vs_removals(epidemic_duration, attack, num_simulations)
+
+fig, ax = plot_of_two_data(freq2, duration_error, 'error', True, freq2, duration_attack, label2 = 'attack', ylabel='Epidemic duration', xlabel='Frequency', title = 'Epidemic duration v/s Frequency of removals')   
+
+
+# data for the peak value 
+freq2, peak_error = epi_sim.epidemic_property_vs_removals(peak, error, num_simulations)
+_, peak_attack = epi_sim.epidemic_property_vs_removals(peak, attack, num_simulations)
+
+fig, ax = plot_of_two_data(freq2, peak_error, 'error', True, freq2, peak_attack, label2 = 'attack', ylabel='Peak', xlabel='Frequency', title = 'Peak v/s Frequency of removals')   
+
+
+# data for the t_peak
+freq2, t_peak_error = epi_sim.epidemic_property_vs_removals(t_peak, error, num_simulations)
+_, t_peak_attack = epi_sim.epidemic_property_vs_removals(t_peak, attack, num_simulations)
+
+fig, ax = plot_of_two_data(freq2, t_peak_error, 'error', True, freq2, t_peak_attack, label2 = 'attack', ylabel='t_peak', xlabel='Frequency', title = 't_peak v/s Frequency of removals')   
