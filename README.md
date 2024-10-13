@@ -4,6 +4,7 @@
 * [Overview](#overview)
 * [Prerequisites](#prerequisites)
 * [Installation](#installation)
+* [Usage](#usage)
 * [References](#references)
 
 
@@ -40,6 +41,13 @@ pip install -r requirements.txt
 ```bash
 python setup.py install
 ```
+
+
+## Usage
+The programm can be used through python script.
+
+# Python 
+In the sections ['how-to-guide'](url) there is a list of examples that will guide you in recreate the same simulations and analysis showed in the ['report'](url) In particular, one file is about simulating error/attack on netwroks and visualising the changes in graph feature; the other one focuses on simulating an epidemic and investigating on how nodes removing affects its spreading through analyzing different epidemic features. 
 
 ## References
 
