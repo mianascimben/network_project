@@ -1,0 +1,7 @@
+numpy
+matplotlib.pyplot
+networkx
+random
+zipfile
+pickle 
+pandas
