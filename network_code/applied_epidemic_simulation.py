@@ -1,10 +1,10 @@
 import networkx as nx
 import numpy as np
 import random  
-from tolerance_simulation import EpidemicToleranceSimulation
-from epidemic_functions import *
-from remotion_functions import error, attack
-from plot_functions import plot_of_two_data
+from simulation_tools.tolerance_simulation import EpidemicToleranceSimulation
+from simulation_tools.epidemic_functions import *
+from simulation_tools.remotion_functions import error, attack
+from simulation_tools.plot_functions import plot_of_two_data
 
 # netwok constants
 N = 1000  #number of nodes

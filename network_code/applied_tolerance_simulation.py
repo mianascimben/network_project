@@ -1,10 +1,10 @@
 import networkx as nx
 import numpy as np
 import random 
-from tolerance_simulation import ToleranceSimulation
-from graph_property_functions import get_diameter, largest_connected_component_size, average_size_connected_components
-from remotion_functions import attack, error
-from plot_functions import plot_of_two_data
+from simulation_tools.tolerance_simulation import ToleranceSimulation
+from simulation_tools.graph_property_functions import get_diameter, largest_connected_component_size, average_size_connected_components
+from simulation_tools.remotion_functions import attack, error
+from simulation_tools.plot_functions import plot_of_two_data
 
 # netwok constants
 N = 1000 #number of nodes

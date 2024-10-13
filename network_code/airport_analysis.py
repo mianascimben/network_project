@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 import pickle
 import random 
-from graph_property_functions import get_diameter, largest_connected_component_size, average_size_connected_components
-from tolerance_simulation import ToleranceSimulation, EpidemicToleranceSimulation
-from epidemic_functions import *
-from remotion_functions import error, attack
-from plot_functions import plot_of_two_data
+from simulation_tools.graph_property_functions import get_diameter, largest_connected_component_size, average_size_connected_components
+from simulation_tools.tolerance_simulation import ToleranceSimulation, EpidemicToleranceSimulation
+from simulation_tools.epidemic_functions import *
+from simulation_tools.remotion_functions import error, attack
+from simulation_tools.plot_functions import plot_of_two_data
 
 # Download the dataset for the airports
 with open('flight.gpickle', 'rb') as f:
