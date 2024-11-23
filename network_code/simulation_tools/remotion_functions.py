@@ -1,16 +1,18 @@
-# -*- coding: utf-8 -*-
+'''
+
+    Definition of the node removal functions
+    
+'''
+
 
 import random 
 
 def attack(G, num_attacks = 1):
     '''
     Perform multiple attacks on the input graph 'G' by removing the most 
-    connected nodes.
-
-    This function simulates attacks on the graph 'G' by identifying and 
-    removing the most connected nodes (nodes with the highest degree). The 
-    function returns a copy of the input graph after the specified number of 
-    nodes have been removed.
+    connected nodes (highest degree).
+    The function returns a copy of the input graph after the specified number of 
+    nodes ('num_attacks') have been removed.
 
     Parameters
     ----------
@@ -32,13 +34,13 @@ def attack(G, num_attacks = 1):
     >>> G = nx.erdos_renyi_graph(100, 0.05)
     >>> G_after_attack = attack(G, 5)
     >>> print(G_after_attack.number_of_nodes())
-    95
+    95 
 
     Notes
     -----
     The function performs attacks by removing nodes with the highest degree 
     first. In case of ties (multiple nodes having the same degree), the nodes 
-    are removed in arbitrary order.
+    are removed in the order they appear after being sorted by 'sorted()'.
 
     '''
     G_with_attacks = G.copy()
@@ -54,10 +56,7 @@ def error(G, num_errors = 1):
     '''
     Perform multiple errors on a copy of the input graph 'G' by randomly 
     removing nodes.
-
-    This function simulates errors on the graph 'G' by randomly removing a 
-    specified number of nodes. It returns a copy of the input graph after 
-    the nodes have been removed.
+    It returns a copy of the input graph after the nodes have been removed.
 
     Parameters
     ----------
@@ -78,12 +77,8 @@ def error(G, num_errors = 1):
     >>> G = nx.erdos_renyi_graph(100, 0.05)
     >>> G_after_error = error(G, 5)
     >>> print(G_after_error.number_of_nodes())
-    95, 5 fewer than the original number of nodes
-
-    Notes
-    -----
-    The function performs errors by randomly selecting nodes from the graph and 
-    removing them. This simulates random failures or disruptions in the network.
+    95
+    
     '''
     
     G_with_errors = G.copy()

@@ -1,3 +1,11 @@
+'''
+
+This script defines the classes implementing the simulation for analyzing
+the changing in the network and epidemic properties when node removals are 
+performed. 
+
+'''
+
 import networkx as nx
 import numpy as np
 import inspect
@@ -6,44 +14,48 @@ import matplotlib.pyplot as plt
 
 class GetRemotionFrequencies: 
     '''
-    A class to calculate remotion frequencies of network nodes
+    A class to calculate node remotion frequencies.
 
-    The number of frequencies calculated is set by 'num_points' and they are
+    The number of frequencies calculated is set by 'num_points'.
+    This is the parent class of ToleranceSimulation and EpidemicToleranceSimulation.
+    
     Attributes:
     ----------
-    max_removal_rate : float
-        Maximum removal rate for the nodes in the network.
-    num_points : int
-        Total number of removal frequencies to be generated.
+    max_removal_rate : float, optional
+        Maximum removal rate for the nodes in the network (default is 0.05).
+    num_points : int, optional
+        Total number of removal frequencies to be generated (default is 20).
     number_of_nodes : int
         Total number of nodes in the network.
     frequencies_cleaned : numpy.ndarray
-        Array of unique cleaned frequencies after removing repeated values.
+        Array of unique frequencies after removing repeated values.
     num_removals_cleaned : numpy.ndarray
-        Array of unique cleaned numbers of removals corresponding to the cleaned frequencies.
+        Array of unique numbers of removals corresponding to the 
+        'frequencies_cleaned'.
     
     Methods:
     -------
     calculate_frequencies():
-        Calculates the frequencies and the number of node removals based on the maximum removal 
-        rate and the number of points.
+        Calculates the frequencies and the number of node removals based on the
+        maximum removal rate and the number of points.
     '''
     
     def __init__(self,G, max_removal_rate = 0.05, num_points = 20):
-        '''Constructs all the necessary attributes for the person object
+        '''Constructs all the necessary attributes for the subclasses.
         
         Parameters:
         ----------
-        max_removal_rate : float
-            Maximum removal rate for the nodes in the network.
-        num_points : int
-            Total number of removal frequencies to be generated.
+        max_removal_rate : float, optional
+            Maximum removal rate for the nodes in the network (default is 0.05).
+        num_points : int, optional
+            Total number of removal frequencies to be generated (default is 20).
         number_of_nodes : int
             Total number of nodes in the network.
         frequencies_cleaned : numpy.ndarray
-            Array of unique cleaned frequencies after removing repeated values.
+            Array of unique frequencies after removing repeated values.
         num_removals_cleaned : numpy.ndarray
-            Array of unique cleaned numbers of removals corresponding to the cleaned frequencies.
+            Array of unique numbers of removals corresponding to the 
+            'frequencies_cleaned'.
         
         '''
         self.max_removal_rate = max_removal_rate
@@ -85,13 +97,16 @@ class GetRemotionFrequencies:
 
 class ToleranceSimulation(GetRemotionFrequencies):
     '''
-    A class to analyse network tolerance by removing nodes and observing changes in a specified graph property.
+    A class to analyse network toleranc observing changes in a specified graph 
+    property under node remotion (error/attack).
 
     Attributes:
     ----------
     G : networkx.Graph
-        The input network graph on which makin the simulation.
+        The input network graph on which running the simulation.
         
+    All the attributes included in the 'GetRemotionFrequencies' class 
+    
     Methods:
     -------
     graph_property_vs_removals(property_function, removal_function):
@@ -101,6 +116,7 @@ class ToleranceSimulation(GetRemotionFrequencies):
     -----
     This class is connected to 'GetRemotionFrequencies' by inheritance.
     '''
+    
     def __init__(self, G, max_removal_rate = 0.05, num_points = 20):
         '''
         Initializes the ToleranceSimulation with a graph, maximum removal rate, and number of points.
@@ -112,7 +128,8 @@ class ToleranceSimulation(GetRemotionFrequencies):
         max_removal_rate : float, optional
             The maximum removal rate for the nodes (default is 0.05).
         num_points : int, optional
-            The number of points for calculating the removal frequencies (default is 20).
+            The number of points for calculating the removal frequencies 
+            (default is 20).
         
         '''
         super().__init__(G, max_removal_rate, num_points)
@@ -123,10 +140,11 @@ class ToleranceSimulation(GetRemotionFrequencies):
         Calculates the specified graph property as a function of node removals.
 
         This function generates new versions of the input graph 'G', each subjected
-        to a different node removal rates. The removals can be randomly (error) or 
+        to a different node removal frequency. The removals can be randomly (error) or 
         hierarchically (attack) selected depending on the 'removal_function'. 
-        It then calculates the property of the graph, defined by 'property_function', for each modified 
-        graph and returns the data for further analysis or plotting.
+        It then calculates the property of the graph, defined by 'property_function',
+        for each modified graph and returns the data for further analysis or 
+        plotting.
 
         Parameters
         ----------
@@ -168,10 +186,10 @@ class EpidemicData():
     ----------
     number_of_nodes : int
         The total number of nodes in the network.
-    p_t : float
+    mu : float
         The transmission probability.
-    p_i : float
-        The immunization probability.
+    nu : float
+        The recovery probability.
     duration : int
         The duration of the epidemic simulation.
     infected_t0 : int
@@ -180,48 +198,48 @@ class EpidemicData():
     Methods:
     -------
     first_infection():
-        Initializes the infection state by randomly infecting a set number of nodes.
+        Initializes the infection state by randomly infecting a set number of 
+        nodes.
 
-    evolution_epidemy_SIR(G, plot_spread=False):
+    evolution_epidemic_SIR(G, plot_spread=False):
         Simulates the evolution of the epidemic using the SIR model.
 
-    infection_with_for(G, state):
-        Updates the infection state of the network using a for loop over discordant links.
+    get_infected(G, state):
+        Updates the infection state of the network using a for loop over 
+        discordant links.
 
-    infection_without_for(G, state):
-        Updates the infection state of the network using vectorized operations without a for loop.
-
-    immunity(starting_state, final_state):
+    get_recovered(starting_state, final_state):
         Updates the state of the network by assigning immunity to infected nodes.
 
     '''
-    def __init__(self, G, p_t, p_i, duration, infected_t0):
+    def __init__(self, G, mu, nu, duration, infected_t0):
         '''
-        Initializes the EpidemicData with the network and epidemic parameters.
+        Initializes the 'EpidemicData' class with the network and the epidemic
+        parameters.
 
         Parameters:
         ----------
         G : networkx.Graph
             The input network graph.
-        p_t : float
+        mu : float
             The transmission probability.
-        p_i : float
-            The immunization probability.
+        nu : float
+            The recovery probability.
         duration : int
             The duration of the epidemic simulation.
         infected_t0 : int
             The initial number of infected nodes.
         '''
         self.number_of_nodes = nx.number_of_nodes(G)
-        self.p_t = p_t
-        self.p_i = p_i
+        self.mu = mu
+        self.nu = nu
         self.duration = duration
         self.infected_t0 = infected_t0
         
-        
     def first_infection(self):
         '''
-        Initializes the infection state by randomly infecting a set number of nodes.
+        Initializes the infection state by randomly infecting a set number of
+        nodes.
 
         Returns:
         -------
@@ -233,14 +251,25 @@ class EpidemicData():
         state[infected_index] = 1
         return state
     
-    def evolution_epidemy_SIR(self, G, plot_spread = False):
+    def evolution_epidemic_SIR(self, G, plot_spread = False):
         '''
         Simulates the evolution of the epidemic using the SIR model.
         
         This process relies on two assumptions: the infection and immunisation are
         binomial processes and the trasmission of the disease can only happen among 
-        nodes that are connected. 
-
+        nodes that are connected.
+        
+        Each node can be in two states: 
+            0  if the node is susceptible 
+            1  if the node is infected
+            -1 if the node has recovered
+            
+        This function lets to visualize the evolution of the states of the nodes
+        over time, by setting the 'plot_spread' variable equal to 'True'. 
+            red nodes: infected state
+            green nodes: recovered state
+            blue nodes: susceptible state
+        
         Parameters:
         ----------
         G : networkx.Graph
@@ -251,17 +280,29 @@ class EpidemicData():
        Returns:
        -------
        infection_rate : numpy.ndarray
-           The array of infection rates over time.
-       immunized_rate : numpy.ndarray
-           The array of immunization rates over time.
-        
+           The array emboding the fraction of infected cases over time.
+       recovered_rate : numpy.ndarray
+           The array embodying the fraction of recovered nodes over time.
+           
+       Notes:
+       -----
+       
+       The recovery process taking place at a certain time step
+       cannot recover the nodes that have been infected during the same 
+       time step. So it only works on nodes infected at leat from 1 time step. 
+       
+       The plotting functionality needs a lot of power and time. 
+       The plots are thought to provide a visual understanding of the epidemic 
+       dynamics and not to analyze it. When you use it, make sure to have small
+       networks and a short simulation. 
        '''
         state =  self.first_infection()
         
         # In error/attack simulation relabeling prevent from incongruences between 
-        # indexes of the array 'state', that go from 0 to number of nodes of the actual graph, 
-        # and the nodes labels of the first graph of the simulation. Maybe the index i in 'state'
-        # has been erased in the graph: this label would refer to nothing.
+        # indexes of the array 'state', that go from 0 to number of nodes of the
+        # actual graph, and the nodes labels of the first graph of the simulation.
+        # Maybe the index i in 'state' has been erased in the graph: this label
+        # would refer to nothing.
         G = nx.convert_node_labels_to_integers(G)
         
         if plot_spread:
@@ -272,46 +313,41 @@ class EpidemicData():
             plt.show() 
             
         infection_rate = []
-        immunized_rate = []
+        recovered_rate = []
+        
         for time in range(1, self.duration + 1):
             
-            infected_state = self.infection_with_for(G, state)
+            infected_state = self.get_infected(G, state)
         
-            immunized_state = self.immunity(state, infected_state)
+            recovered_state = self.get_recovered(state, infected_state)
             
-            infection_rate.append(np.mean(immunized_state == 1))
-            immunized_rate.append(np.mean(immunized_state == -1))
+            infection_rate.append(np.mean(recovered_state == 1))
+            recovered_rate.append(np.mean(recovered_state == -1))
             
-            state = immunized_state
+            state = recovered_state
+            
             if plot_spread:
-                node_colors = ['red' if immunized_state[node] == 1 else 'green' if immunized_state[node] == -1 else 'skyblue' for node in G.nodes()]
+                node_colors = ['red' if recovered_state[node] == 1 else 'green' if recovered_state[node] == -1 else 'skyblue' for node in G.nodes()]
                 nx.draw(G, pos, with_labels=True, node_color=node_colors)
                 plt.title(f"Time = {time}")
                 plt.show()
                 
-        return np.array(infection_rate), np.array(immunized_rate)
-    
-    # def recovery(self, starting_state, final_state):
+        return np.array(infection_rate), np.array(recovered_rate)
         
-    #     infected_nodes = np.where(starting_state == 1)
-    #     recovery = np.random.binomial(1, self.p_r, len(infected_nodes[0])).astype(bool)
-    #     recovered_nodes = infected_nodes[0][recovery]
-    #     final_state[recovered_nodes] = 0
-    #     return final_state
-        
-    def infection_with_for(self, G, state):
+    def get_infected(self, G, starting_state):
         '''
         Updates the infection state of the network.
         
-        This function identifies the nodes that are currently susceptible and applies a binomial process
-        to determine which of these nodes become infected. The infection can happen only among nodes that 
-        are connected. Immunized nodes are then marked in the final state with a value of 1.
+        This function identifies the nodes that are currently susceptible and 
+        applies a binomial process to determine which of these nodes become 
+        infected. The infection can happen only among nodes that are connected. 
+        Infected nodes are then marked in the final state with a value of 1.
 
         Parameters:
         ----------
         G : networkx.Graph
             The input network graph.
-        state : numpy.ndarray
+        starting_state : numpy.ndarray
             The current state of the nodes.
 
         Returns:
@@ -319,51 +355,59 @@ class EpidemicData():
         state : numpy.ndarray
             The updated state of the nodes after infection.
         '''
+        state = starting_state
+        # find all the pairs of nodes that are connected by an edge and in which
+        # one of the two nodes is infected and the other susceptible
         discordant_links = [(u, v) for u, v in G.edges() if state[u] + state[v] == 1]
-        transmit = np.random.binomial(1, self.p_t, len(discordant_links))
+        transmission = np.random.binomial(1, self.mu, len(discordant_links))
             
         #Update the infection status
         for j, (u, v) in enumerate(discordant_links):
-            if transmit[j]:
+            if transmission[j]:
                 state[u] = state[v] = 1 
         
         return state
 
-    def immunity(self, starting_state, final_state):
+    def get_recovered(self, starting_state, final_state):
         '''
         Updates the state of the network by assigning immunity to infected nodes.
 
-        This function identifies the nodes that are currently infected and applies a binomial process
-        to determine which of these nodes become immunized. Immunized nodes are then marked in the 
-        final state with a value of -1.
+        This function identifies the nodes infected (before they have
+        trasmited the disease) and applies a binomial process to determine which 
+        of these nodes become recovered. 
+        Recovered nodes are then marked with a value of -1 only after the 
+        trasmission of the desease has be performed, that is the final state.
         
         Parameters:
         ----------
         starting_state : numpy.ndarray
-            The initial state of the network, where infected nodes are marked with a value of 1.
+            The initial state of the network, where infected nodes are marked.
+            It is the array of the states before the infected nodes have 
+            trasmitted the disease with a value of 1.
         final_state : numpy.ndarray
-            The state of the network to be updated with immunized nodes.
+            The state of the network to be updated with recovered nodes.
+            It is the array of the states after the infected nodes have 
+            trasmitted the disease.            
 
         Returns:
         -------
         final_state : numpy.ndarray
-            The updated state of the network, with immunized nodes marked as -1.
+            The updated state of the network, with recovered nodes marked as -1.
 
         '''
-        
         infected_nodes = np.where(starting_state == 1)
-        immunity = np.random.binomial(1, self.p_i, len(infected_nodes[0])).astype(bool)
-        immunized_nodes = infected_nodes[0][immunity]
-        final_state[immunized_nodes] = -1
+        immunity = np.random.binomial(1, self.nu, len(infected_nodes[0])).astype(bool)
+        recovered_nodes = infected_nodes[0][immunity]
+        final_state[recovered_nodes] = -1
         return final_state     
 
-    
 class EpidemicToleranceSimulation(GetRemotionFrequencies):
     '''
     A class to simulate the effect of node removals on epidemic spread in a network.
 
-    This class extends the GetRemotionFrequencies class and integrates epidemic simulation 
-    using the SIR model to study how the removal of nodes impacts the spread of an epidemic.
+    This class extends the GetRemotionFrequencies class and integrates epidemic 
+    simulation using the SIR model to study how the removal of nodes impacts
+    the spread of an epidemic.
 
     Attributes:
     ----------
@@ -371,19 +415,21 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
         The input network graph.
     epidemic_data : EpidemicData
         An instance of EpidemicData to simulate the epidemic on the network.
-
+    All the attributes included in the 'GetRemotionFrequencies' class.
+    
     Methods:
     -------
     epidemic_property_vs_removals(property_function, removal_function, *args, **kwargs):
-        Simulates the effect of node removals on the spread of the epidemic and calculates the 
-        specified epidemic property as a function of node removal.
+        Simulates the effect of node removals on the spread of the epidemic and 
+        calculates the specified epidemic property as a function of node removal.
         
     Notes:
     -----
-    This class is connected to 'GetRemotionFrequencies' by inheritance and to EpidemicData by 
-    composition.
+    This class is connected to 'GetRemotionFrequencies' by inheritance and to 
+    EpidemicData by composition.
     '''
-    def __init__(self, G, p_t, p_i, duration, infected_t0, max_removal_rate = 0.05, num_points = 20):
+    
+    def __init__(self, G, mu, nu, duration, infected_t0, max_removal_rate = 0.05, num_points = 20):
         '''
         Initializes the EpidemicToleranceSimulation with the network and epidemic parameters.
 
@@ -391,10 +437,10 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
         ----------
         G : networkx.Graph
             The input network graph.
-        p_t : float
+        mu : float
             The transmission probability.
-        p_i : float
-            The immunization probability.
+        nu : float
+            The recovery probability.
         duration : int
             The duration of the epidemic simulation.
         infected_t0 : int
@@ -405,25 +451,33 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
             The number of points for calculating the removal frequencies (default is 20).
         '''
         super().__init__(G, max_removal_rate, num_points)
-        self.epidemic_data = EpidemicData(G, p_t, p_i, duration, infected_t0)
+        self.epidemic_data = EpidemicData(G, mu, nu, duration, infected_t0)
         self.G = G
         
         
-    def epidemic_property_vs_removals(self, property_function, removal_function, num_simulations, plot = False,  *args, **kwargs):
+    def epidemic_property_vs_removals(self, property_function, removal_function, num_simulations, *args, **kwargs):
         '''
-        Simulates the effect of node removals on an epidemic and calculates the specified property.
+        Simulates the effect of node removals on an epidemic spreading and 
+        records the changing in the value of the property given by 
+        'property_function'.
 
-        This method simulates the spread of an epidemic following the SIR model on a network after nodes are removed according 
-        to a given 'removal_function'. It then evaluates a specified epidemic property at each removal stage.
+        This method simulates the spread of an epidemic following the SIR model 
+        on a network after nodes are removed according to a given 
+        'removal_function'. It then evaluates a specified epidemic property at 
+        each removal stage. 
+        In order to avoid random effects more simulations are runned at each 
+        removal frequencies. Then the value of the epidemic property is averaraged
+        over all the simulations.
 
         Parameters:
         ----------
         property_function : function
-            A function that calculates a specific property of the epidemic (e.g., infection rate).
+            A function that calculates a specific property of the epidemic.
         removal_function : function
             A function that removes nodes from the network.
-        num_simulation: int
-            The number of simulations to run for each removal stage, allowing for the averaging of results 
+        num_simulations: int
+            The number of simulations to run for each removal stage, allowing 
+            for the averaging of results 
             to account for the randomness in epidemic spreading.
         *args : tuple
             Additional arguments to pass to the property function.
@@ -433,44 +487,50 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
         Returns:
         -------
         frequencies_cleaned : numpy.ndarray
-            The cleaned array of frequencies corresponding to the removal rates.
+            The array of frequencies corresponding to the removal rates.
         property_values : list
-            The list of property values corresponding to each removal stage.
+            The list of the values of the calculated feature of the epidemic
+            at each removal frequency.
             
         Notes
         -----
-        The 'property_function' has some restrictions about its input: it is expected to handle the infection 
-        evolution over time. However, it can also handle the immunization evolution or other parameters, depending on the specific function used.
+        The 'property_function' has some restrictions about its input: it is 
+        expected to handle the infection  evolution over time. However, 
+        it can also handle the immunization evolution or other parameters if the
+        'property_function' requires them.
 
         
         Examples
         --------
         >>> G = nx.erdos_renyi_graph(100, 0.05)
-        >>> simulation = EpidemicToleranceSimulation(G, p_t=0.15, p_i=0.05, duration=50, infected_t0=1, num_points=5)
-        >>> freq, duration = simulation.epidemic_property_vs_removals(epidemic_duration, attack, num_simulations=10)
+        >>> simulation = EpidemicToleranceSimulation(G, mu=0.15, nu=0.05, 
+                                                     duration=50, infected_t0=1,
+                                                     num_points=5)
+        >>> freq, duration = simulation.epidemic_property_vs_removals(epidemic_duration, 
+                                                                      attack, 
+                                                                      num_simulations=10)
         >>> freq
         array([0.  , 0.01, 0.02, 0.03, 0.05])
         >>> duration
         [45.1, 50.0, 35.8, 50.0, 50.0]
         '''
-        # check which data the 'property_function' requires
-        #sig = inspect.signature(property_function)
-        #param_names = sig.parameters.keys()
-        
+
         property_values = []
          
         for num_removed_nodes in self.num_removals_cleaned:
             G_modified = removal_function(self.G, num_removed_nodes)
             
+            # Each row represents an epidemic simulation
             infected = np.zeros((num_simulations, self.epidemic_data.duration))
-            immunized = np.zeros((num_simulations, self.epidemic_data.duration))
+            recovered = np.zeros((num_simulations, self.epidemic_data.duration))
             
             for simulation in range(num_simulations): 
-                infected[simulation, :], immunized[simulation, :] = self.epidemic_data.evolution_epidemy_SIR(G_modified, plot)
+                infected[simulation, :], recovered[simulation, :] = self.epidemic_data.evolution_epidemic_SIR(G_modified, plot=False)
             
-            # Calculate the epidemic property based on whether the property function requires recovery evolution
+            # Calculate the epidemic property
+            # checking if the property function requires recovery evolution
             if 'recovery_evolution' in inspect.signature(property_function).parameters:
-                result = property_function(infected, immunized, *args, **kwargs)
+                result = property_function(infected, recovered, *args, **kwargs)
             else:
                 result = property_function(infected, *args, **kwargs)
                             

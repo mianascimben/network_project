@@ -1,57 +1,62 @@
+'''
+
+This script define some useful function to plot data using a predefined format 
+
+'''
+
 import numpy as np
 import matplotlib.pyplot as plt
-import networkx as nx
+from simulation_tools.pdf_functions import exp_model, fit_data
 
 
-def data_exponential_plot(x, y, errors=True, ylabel='y', xlabel='x', title='x v/s y'):
+def data_exponential_plot(x, y, errors=True, xlabel='x', ylabel='y', title='x v/s y'):
     '''
-    Plots the probability density function (frequency) of the node degrees.
+    Plots the probability density function of the node degrees.
 
-    This function generates a log-log plot of the degree distribution of nodes in a graph. 
-    It plots the experimental data and overlays a theoretical exponential model.
-    Optionally, it can also display error bands around the theoretical model (3 sigma confidence).
+    This function generates a log-log plot of the degree distribution of 
+    in a graph. It plots the experimental data and overlays a theoretical 
+    exponential model. The fit of the data to the exponential model is achieved 
+    through the function 'fit_data()'.
+    Optionally, it can also display error bands around the theoretical model 
+    (set 3 sigma of confidence).
 
-    Parameters
+    Parameters:
     ----------
     x : array-like
-        Indipendent variable.
+        An array containing the degree of the node in a graph.
     y : array-like
-        Dependent variable.
-    model: callable
-        The model function to fit.
+        An array containing the frequency of each node degree in a graph.
     errors : bool, optional
         Whether to plot error bands around the theoretical model. The default is True.
-    ylabel : str, optional
-        The label for the y-axis. The default is 'y'.
     xlabel : str, optional
         The label for the x-axis. The default is 'x'.
+    ylabel : str, optional
+        The label for the y-axis. The default is 'y'.
     title : str, optional
         The title of the plot. The default is 'x v/s y'.
 
-    Returns
+    Returns:
     -------
     fig : matplotlib.figure.Figure
         The matplotlib figure object containing the plot.
+    ax : matplotlib.axes._axes.Axes
+        The matplotlib Axes object containing the plot.
 
-    Examples
-    --------
-    >>> G = nx.scale_free_graph(N,seed = 10)
-    >>> degree, frequency = frequency_network_degree(G)
-    >>> fig = data_exponential_plot(degree, frequency)
-    >>> plt.show()
     '''
     parameters, pcov = fit_data(exp_model, x, y)
     alpha, beta = parameters
+    
     x_fit = np.linspace(min(x), max(x), 100)
     y_fit = exp_model(x_fit, alpha, beta)  # Unpacks parameters as alpha and beta
-
+    
     fig, ax = plt.subplots()
     ax.loglog(x, y, label='Experimental data', linestyle='none', marker='o')
     ax.loglog(x_fit, y_fit, color='red', label='Model')
+    d_alpha, d_beta = np.sqrt(np.diag(pcov))
     
     if errors:        
-        y_fit_up = exp_model(x_fit, alpha + 3*np.sqrt(pcov[0][0]), beta + 3*np.sqrt(pcov[1][1]))
-        y_fit_down = exp_model(x_fit, alpha - 3*np.sqrt(pcov[0][0]), beta - 3*np.sqrt(pcov[1][1]))
+        y_fit_up = exp_model(x_fit, alpha + 3*d_alpha, beta + 3*d_beta)
+        y_fit_down = exp_model(x_fit, alpha - 3*d_alpha, beta - 3*d_beta)
         
         ax.fill_between(x_fit, y_fit_up, y_fit_down, alpha=0.5, label='Errors')
     
@@ -60,50 +65,51 @@ def data_exponential_plot(x, y, errors=True, ylabel='y', xlabel='x', title='x v/
     ax.set_title(title, size=18)
     ax.legend()
     ax.grid(True)
-    return fig
+    return fig, ax
 
 
-def plot_of_two_data(x1, y1, label1 = 'data1', data2=False, x2=[], y2=[], label2 ='data2', ylabel='y', xlabel='x', title='x v/s y'):
+def plot_multiple_data(x_data, y_data, labels, colors=None, markers=None, linestyles=None,
+                       ylabel='y', xlabel='x', title='x v/s y'):
     '''
-    Plots the primary data '(x1, y1)' and, optionally, secondary data '(x2, y2)' if provided.
+    Plots multiple data series on the same figure.
 
-    This function generates a plot including the primary data and the secondary ones.
-
-    Parameters
+    Parameters:
     ----------
-    x1 : array-like
-        The x-coordinates of the primary data points. 
-    y1 : array-like
-        The y-coordinates of the primary data points. 
-    label1 : str, optional
-        The label for the primary data points. The default is 'data1'.
-    data2 : bool, optional
-        If True, plots the secondary data. The default is False.
-    x2 : array-like, optional
-        The x-coordinates of the secondary data points. The default is an empty list.
-    y2 : array-like, optional
-        The y-coordinates of the secondary data points. The default is an empty list.
-    label2 : str, optional
-        The label for the secondary data data points. The default is 'data2'.
+    x_data : list of array-like
+        A list containing the x-coordinates of each data series.
+    y_data : list of array-like
+        A list containing the y-coordinates of each data series.
+    labels : list of str
+        A list of labels for the data series.
+    colors : list of str, optional
+        A list of colors for the data series. Defaults to None (automatic color selection).
+    markers : list of str, optional
+        A list of markers for the data series. Defaults to None (no markers).
+    linestyles : list of str, optional
+        A list of linestyles for the data series. Defaults to None (solid lines).
     ylabel : str, optional
-        The label for the y-axis. The default is 'y'.
+        The label for the y-axis. Default is 'y'.
     xlabel : str, optional
-        The label for the x-axis. The default is 'x'.
+        The label for the x-axis. Default is 'x'.
     title : str, optional
-        The title of the plot. The default is 'x v/s y'.
+        The title of the plot. Default is 'x v/s y'.
 
-    Returns
+    Returns:
     -------
     fig : matplotlib.figure.Figure
         The matplotlib figure object containing the plot.
+    ax : matplotlib.axes._axes.Axes
+        The matplotlib Axes object containing the plot.
 
     '''
     fig, ax = plt.subplots()
     
-    ax.plot(x1, y1, label = label1, color='blue', marker='o', linestyle='--')
-    
-    if data2:
-        ax.plot(x2, y2, label = label2, color='blue', marker='s', linestyle='--')
+    # Iterate over each data series and plot
+    for i, (x, y) in enumerate(zip(x_data, y_data)):
+        color = colors[i] if colors else None
+        marker = markers[i] if markers else None
+        linestyle = linestyles[i] if linestyles else None
+        ax.plot(x, y, label=labels[i], color=color, marker=marker, linestyle=linestyle)
     
     ax.set_title(title)
     ax.set_xlabel(xlabel)
