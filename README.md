@@ -50,6 +50,8 @@ The programm can be used through python script.
 In the sections ['how-to-guide'](url) there is a list of examples that will guide you in recreate the same simulations and analysis showed in the ['report'](url) In particular, one file is about simulating error/attack on netwroks and visualising the changes in graph feature; the other one focuses on simulating an epidemic and investigating on how nodes removing affects its spreading through analyzing different epidemic features. 
 
 ## References
+>1. Albert, R. et al. (2000). "Error and attack tolerance of complex networks". Nature, vol. 406,6794.
 
-<blockquote>1.Error and attack tolerance of complex networks; Re´ka Albert, Hawoong Jeong & Albert-La´ szlo´ Baraba´ si; Department of Physics, 225 Nieuwland Science Hall, University of Notre Dame,
-Notre Dame, Indiana 46556, USA <blockquote>
+>2. Erdős, P. & Rényi, A. (1959). "On random graphs". Publicationes Mathematicae, 6, 290–297.
+  
+>3. The Devastator. (2020). "Global Air Transportation Network: Mapping the World’s Air Traffic". Kaggle. Available at: Global Air Transportation Network. Accessed: August 18, 2024.
