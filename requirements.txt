@@ -1,7 +1,5 @@
 numpy
-matplotlib.pyplot
+matplotlib
 networkx
 random
-zipfile
-pickle 
 pandas
