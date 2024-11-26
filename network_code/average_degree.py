@@ -17,8 +17,8 @@ from simulation_tools.pdf_functions import degree_pdf
 from simulation_tools.plot_functions import plot_multiple_data
 
 # netwok constants
-N = 10   # number of nodes
-p = 0.4  # probability of connection
+N = 1000   # number of nodes
+p = 0.004  # probability of connection
 k = N*p    # starting average degree
 
 # for reproducibility
