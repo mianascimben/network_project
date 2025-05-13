@@ -2,7 +2,7 @@
 
 This file contains the functions used to analyze epidemic features.
 They can be use alone or as argument of the function 
-EpidemicToleranceSimulation.epidemic_property_vs_removals() to study
+'EpidemicToleranceSimulation.epidemic_property_vs_removals()' to study
 how epidemic features behaves when subjected to node removals (error or attack)
 
 """
