@@ -1,6 +1,6 @@
 '''
 
-This script define some useful function to plot data using a predefined format 
+This script define some useful functions to plot data using a predefined format 
 
 '''
 
@@ -118,3 +118,146 @@ def plot_multiple_data(x_data, y_data, labels, colors=None, markers=None, linest
     ax.grid(True)
     
     return fig, ax
+
+def make_plot(freq, data_error, data_attack, ylabel, title):
+    """
+    Generates a 2-line plot comparing the effect of random errors and targeted 
+    attacks on a given network metric across node removal frequencies.
+
+    Parameters
+    ----------
+    freq : array-like
+        Array of node removal frequencies.
+
+    data_error : array-like
+        Metric values under random errors.
+
+    data_attack : array-like
+        Metric values under targeted attacks.
+
+    ylabel : str
+        Label for the y-axis (e.g., "Diameter", "Total Infected").
+
+    title : str
+        Title of the plot.
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        The figure object containing the plot.
+
+    ax : matplotlib.axes.Axes
+        The axes object for further customization or saving.
+    """
+    fig, ax = plot_multiple_data(
+        x_data = [freq, freq],
+        y_data = [data_error, data_attack],
+        labels = ['error','attack'],
+        markers = ['o','o'],
+        linestyles = ['-','-'],
+        ylabel = ylabel, xlabel='Frequency',
+        title = title
+        )
+    return fig, ax
+
+def make_plot_fragmentation(freq, S_error, S_attack, s_error, s_attack,  ylabel, title):
+    """
+    Generates a 4-line plot showing the structural fragmentation of a network under
+    random errors and targeted attacks. Plots both:
+    - S: Size of the largest connected component
+    - <s>: Average size of the remaining connected components
+    
+    Parameters
+    ----------
+    freq : array-like
+        Array of node removal frequencies.
+    
+    S_error : array-like
+        Size of the largest component under random errors.
+    
+    S_attack : array-like
+        Size of the largest component under targeted attacks.
+    
+    s_error : array-like
+        Average size of smaller components under random errors.
+    
+    s_attack : array-like
+        Average size of smaller components under targeted attacks.
+    
+    ylabel : str
+        Label for the y-axis (e.g., "S, <s>").
+    
+    title : str
+        Title of the plot.
+    
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        The figure object containing the plot.
+    
+    ax : matplotlib.axes.Axes
+        The axes object for further customization or saving.
+    """
+    fig, ax = plot_multiple_data(
+            x_data = [freq, freq, freq, freq], 
+            y_data = [S_error, S_attack, s_error, s_attack],  
+            labels = ['S vs error', 'S vs attack', '<s> vs error', '<s> vs attack'],
+            colors = ['blue', 'red', 'blue', 'red'],
+            markers = ['o', 'o', 's', 's'],
+            linestyles = ['--', '--', '-', '-'],
+            ylabel = ylabel, xlabel = 'Frequency',
+            title = title
+            )
+    return fig, ax
+
+def make_plot_2networks(freq, data_error_ER, data_attack_ER, data_error_SF, data_attack_SF, 
+                        ylabel, title):
+    """
+    Generates a 4-line plot to comparethe impact of errors and attacks on two networks
+    (typically ER and SF). Plots:
+    - Error and attack effects on ER network
+    - Error and attack effects on SF network
+
+    Parameters
+    ----------
+    freq : array-like
+        Array of node removal frequencies.
+
+    data_error_ER : array-like
+        Metric values for ER network under random errors.
+
+    data_attack_ER : array-like
+        Metric values for ER network under targeted attacks.
+
+    data_error_SF : array-like
+        Metric values for SF network under random errors.
+
+    data_attack_SF : array-like
+        Metric values for SF network under targeted attacks.
+
+    ylabel : str
+        Label for the y-axis (e.g., "Diameter", "Total Infected").
+
+    title : str
+        Title of the plot.
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        The figure object containing the plot.
+
+    ax : matplotlib.axes.Axes
+        The axes object for further customization or saving.
+    """
+    
+    fig, ax = plot_multiple_data(x_data = [freq, freq, freq, freq], 
+                    y_data = [data_error_ER, data_attack_ER, data_error_SF, data_attack_SF],  
+                    labels = ['error on ER', 'attack on ER', 'error on SF', 'attack on SF'],
+                    colors = ['blue', 'red', 'blue', 'red'],
+                    markers = ['o', 'o', 's', 's'],
+                    linestyles = ['--', '--', '-', '-'],
+                    ylabel = ylabel, xlabel = 'Frequency',
+                    title = title
+                    )
+    return fig, ax
+

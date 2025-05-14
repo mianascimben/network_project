@@ -41,11 +41,11 @@ num_simulations = 100  # Number of simulations to run
 num_points = 15
 
 # graph features analysis
-tol_sim = ToleranceSimulation(air_traffic_net, 0.5)
+Tol_Sim = ToleranceSimulation(air_traffic_net, 0.5)
 
 # data for the diameter
-freq, d_error = tol_sim.graph_property_vs_removals(diameter, error)
-_, d_attack = tol_sim.graph_property_vs_removals(diameter, attack)
+freq, d_error = Tol_Sim.graph_property_vs_removals(diameter, error)
+_, d_attack = Tol_Sim.graph_property_vs_removals(diameter, attack)
 
 fig, ax = plot_multiple_data(x_data = [freq, freq], 
                              y_data = [d_error, d_attack],  
@@ -56,12 +56,12 @@ fig, ax = plot_multiple_data(x_data = [freq, freq],
                              ylabel='Diameter', xlabel='Frequency',
                              title='Diameter on Air Traffic')
 # data for S
-freq, S_error = tol_sim.graph_property_vs_removals(largest_connected_component_size, error)
-_, S_attack = tol_sim.graph_property_vs_removals(largest_connected_component_size, attack)
+freq, S_error = Tol_Sim.graph_property_vs_removals(largest_connected_component_size, error)
+_, S_attack = Tol_Sim.graph_property_vs_removals(largest_connected_component_size, attack)
 
 # data for <s>
-freq, s_error = tol_sim.graph_property_vs_removals(average_size_connected_components, error)
-_, s_attack = tol_sim.graph_property_vs_removals(average_size_connected_components, attack)
+freq, s_error = Tol_Sim.graph_property_vs_removals(average_size_connected_components, error)
+_, s_attack = Tol_Sim.graph_property_vs_removals(average_size_connected_components, attack)
 
 fig, ax = plot_multiple_data(x_data = [freq, freq, freq, freq], 
                              y_data = [S_error, S_attack, s_error, s_attack],  
@@ -73,12 +73,12 @@ fig, ax = plot_multiple_data(x_data = [freq, freq, freq, freq],
                              title='Air Traffic: S and <s>')
 
 # epidemic simulation 
-epi_sim = EpidemicToleranceSimulation(air_traffic_net, mu, nu, duration, infected_t0, 0.5, num_points)
+Epi_Sim = EpidemicToleranceSimulation(air_traffic_net, mu, nu, duration, infected_t0, 0.5, num_points)
 
 
 # data for the total infected
-freq2, infected_error = epi_sim.epidemic_property_vs_removals(total_infected, error, num_simulations)
-_, infected_attack = epi_sim.epidemic_property_vs_removals(total_infected, attack, num_simulations)
+freq2, infected_error = Epi_Sim.epidemic_property_vs_removals(total_infected, error, num_simulations)
+_, infected_attack = Epi_Sim.epidemic_property_vs_removals(total_infected, attack, num_simulations)
 
 fig, ax = plot_multiple_data(x_data = [freq2, freq2], 
                              y_data = [infected_error, infected_attack],  
@@ -90,8 +90,8 @@ fig, ax = plot_multiple_data(x_data = [freq2, freq2],
                              title='Infected Cases on Air Traffic')
 
 # data for the epidemic duration
-freq2, duration_error = epi_sim.epidemic_property_vs_removals(epidemic_duration, error, num_simulations)
-_, duration_attack = epi_sim.epidemic_property_vs_removals(epidemic_duration, attack, num_simulations)
+freq2, duration_error = Epi_Sim.epidemic_property_vs_removals(epidemic_duration, error, num_simulations)
+_, duration_attack = Epi_Sim.epidemic_property_vs_removals(epidemic_duration, attack, num_simulations)
 
 fig, ax = plot_multiple_data(x_data = [freq2, freq2], 
                              y_data = [duration_error, duration_attack],  
@@ -103,8 +103,8 @@ fig, ax = plot_multiple_data(x_data = [freq2, freq2],
                              title='Epidemic Duration on Air Traffic')
 
 # data for the peak value 
-freq2, peak_error = epi_sim.epidemic_property_vs_removals(peak, error, num_simulations)
-_, peak_attack = epi_sim.epidemic_property_vs_removals(peak, attack, num_simulations)
+freq2, peak_error = Epi_Sim.epidemic_property_vs_removals(peak, error, num_simulations)
+_, peak_attack = Epi_Sim.epidemic_property_vs_removals(peak, attack, num_simulations)
 
 fig, ax = plot_multiple_data(x_data = [freq2, freq2], 
                              y_data = [peak_error, peak_attack],  
@@ -116,8 +116,8 @@ fig, ax = plot_multiple_data(x_data = [freq2, freq2],
                              title='Infection Peak on Air Traffic')
 
 # data for the t_peak
-freq2, t_peak_error = epi_sim.epidemic_property_vs_removals(t_peak, error, num_simulations)
-_, t_peak_attack = epi_sim.epidemic_property_vs_removals(t_peak, attack, num_simulations)
+freq2, t_peak_error = Epi_Sim.epidemic_property_vs_removals(t_peak, error, num_simulations)
+_, t_peak_attack = Epi_Sim.epidemic_property_vs_removals(t_peak, attack, num_simulations)
 
 fig, ax = plot_multiple_data(x_data = [freq2, freq2], 
                              y_data = [t_peak_error, t_peak_attack],  

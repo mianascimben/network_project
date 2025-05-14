@@ -11,12 +11,46 @@
 
   
 ## Overview 
-This repository hosts the implementation of a python code useful for analysing how attacks and errors on netwroks may affect information and epidemic spreading. 
+This repository hosts the implementation of a python code useful for analysing how attacks and errors on networks may affect network structure and epidemic spreading. 
+The networks under study are: 
++ **Erdos-Renyi (ER)**: Erdos-Renyi network is a type of random graph composed by a set of _N_ nodes which has been randonly linked parwise with a probability _p_; so the degree (number of total links) of each node follows, _k_, follows a Binomial distribution _Bin(N-1, p)_, which tends to a Poisson distribution for large _N_. Roughly speaking, this implies that most of nodes in an ER network have a similar number of connections, and the network has no significant hubs.  
++ **Scale-Free (SF)**: A scale-free network is a network whose degree distribution follows a power law _P(k)∝ k<sup>-γ</sup>_. This means that the large majority of the nodes are poorly connected, while there is a very small fraction, called _hubs_, that are highly connected.
++ **Global Air Transportation**: A real-world network where nodes represent airports, and edges correspond to airlines connecting them. This network displays a scale-free behaviour. The source of the dataset is ['Kaggle'](https://www.kaggle.com/datasets/thedevastator/global-air-transportation-network-mapping-the-wo).
 
+This study examines how a network’s topology influences its resilience when undergoes errors or attacks. 
++ **Errors**: an error corresponds to the remotion of a node randomly chosen among the whole set.
++ **Attacks**: an attack is the remotion of the most connected node of the network.
 
+An attack or an error implies, together with the node, the removal of all its links. 
+
+To understand the impact of errors/attacks on the network structure you can calculate different features that embodies the connectivity of the graph as the nodes removed increase:
++ **_d_**: the diameter measures how topologically near two nodes are; the smaller _d_ is, theshorter the shortest path between them.
++ **_S_**: the size of the giant components detects the disgragation process from one single aggregate into smaller and disconnected subgroups.  
++ **_<_s_>_**: the average size of all the connected components except the largest one: reveals the organization of the fragments into smaller and bigger clusters following fragmentation.
+**add image**
+- Scale-Free networks rely on a few highly connected hubs, explaining: 
+  - Resilience to random errors (removing random nodes barely affects connectivity).
+  - Vulnerability to targeted attacks: removing a small fraction of hubs quickly fragments the giant component and collapses overall connectivity.
+- Erdős–Rényi networks due to their homogeneous degree distribution:
+  - Show a more uniform response to both errors and attacks.
+  - Less dependent on any individual node, so fragmentation under targeted attacks occurs more gradually.
+-Air Traffic network, records results that align with the characteristics of a Scale-Free topology.
+
+Furthermore, the study incorporates simulations of epidemic spreading using the SIR model to quantify how errors/attacks affect disease transmission dynamics. Through the SIR model, each node/individual within the network can be in one of three stages: Susceptible (S), Infected (I), or Recovered (R). Susceptible nodes can be infected only by the infected nodes they are attached to; once infected, they may recover and acquire immunization. The epidemic ends when all the infected nodes move to the recovered stage. The epidemic dynamics are represented by the infective and recovery curves, which correspond respectively to the count of infected and recovered cases over time (Figure 2).
+The reasons that lead network structure to influence epidemic dynamics are researched in the analysis of the epidemic dynamics, as shown in Figure 2:
++ _peak_  
++ _t_peak_
++ _epidemic_duration_
++ _total_infected_
+
+Results show that while SF networks are robust to random errors, they are highly vulnerable to targeted attacks due to their reliance on a few central hubs. Conversely, the homogeneous degree distribution of ER networks makes them less affected by specific attacks or errors 
+
+-In Scale-Free networks, targeted attacks drastically reduce epidemic metrics (duration, total infections, peak infection), while random errors have minimal impact, reflecting the network’s robustness to diffuse disruptions.
+-In Erdős–Rényi networks, at high attack intensities they eventually follow the Scale-Free behavior, exhibiting a sharp decline not only in connectivity but also in epidemic measures.
+- The real-world air traffic network mirrors the behavior of SF networks, underscoring the importance of hubs in maintaining connectivity. The removal of the largest 10% of airports effectively halts epidemic spread, demonstrating the critical role of key nodes in disease containment.
 ## Prerequisites
 
-In ['requirements.txt'](url) there is a list of all the libraries needed to run the package properly.
+In ['requirements.txt'](https://github.com/mianascimben/network-project/blob/main/requirements.txt) there is a list of all the libraries needed to run the package properly.
 
 ## Installation
 
@@ -37,7 +71,7 @@ cd network-project
 pip install -r requirements.txt
 ```
 
-4. Run the installation command using ['setup.py'](url). This will install the package and its dependencies in your Python environment:
+4. Run the installation command using ['setup.py'](https://github.com/mianascimben/network-project/blob/main/setup.py). This will install the package and its dependencies in your Python environment:
 ```bash
 python setup.py install
 ```
@@ -46,8 +80,8 @@ python setup.py install
 ## Usage
 The programm can be used through python script.
 
-# Python 
-In the sections ['how-to-guide'](url) there is a list of examples that will guide you in recreate the same simulations and analysis showed in the ['report'](url) In particular, one file is about simulating error/attack on netwroks and visualising the changes in graph feature; the other one focuses on simulating an epidemic and investigating on how nodes removing affects its spreading through analyzing different epidemic features. 
+# To be changed 
+In the sections ['how-to-guide'](https://github.com/mianascimben/network-project/tree/main/how-to-guide) there is a list of examples that will guide you in recreating the same simulations and analysis showed in the ['report'](https://github.com/mianascimben/network-project/blob/main/report.pdf). In particular, one file is about simulating error/attack on networks and visualising the changes in graph feature; the other one focuses on simulating an epidemic and investigating on how nodes removing affects its spreading through analyzing different epidemic features. 
 
 ## References
 >1. Albert, R. et al. (2000). "Error and attack tolerance of complex networks". Nature, vol. 406,6794.
