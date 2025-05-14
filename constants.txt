@@ -4,6 +4,8 @@
 N = 1000   
 # probability to connect with other nodes
 P = 0.004 
+# the maximum rate of removable nodes
+MAX_REMOVAL_RATE = 0.5
 
 # epidemic constants
 [epidemic] 
