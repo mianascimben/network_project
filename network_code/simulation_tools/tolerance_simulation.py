@@ -97,8 +97,8 @@ class GetRemotionFrequencies:
 
 class ToleranceSimulation(GetRemotionFrequencies):
     '''
-    A class to analyse network toleranc observing changes in a specified graph 
-    property under node remotion (error/attack).
+    A class to study network tolerance to node remotion (error/attack) by 
+    analysing the behaviour of a specified 'property_function'.
 
     Attributes:
     ----------
@@ -178,7 +178,7 @@ class ToleranceSimulation(GetRemotionFrequencies):
          
         return self.frequencies_cleaned, property_values
     
-class EpidemicData():
+class SIR_Model():
     '''
     A class to simulate the spread of an epidemic on a network using the SIR model.
 
@@ -201,7 +201,7 @@ class EpidemicData():
         Initializes the infection state by randomly infecting a set number of 
         nodes.
 
-    evolution_epidemic_SIR(G, plot_spread=False):
+    evolution(G, plot_spread=False):
         Simulates the evolution of the epidemic using the SIR model.
 
     get_infected(G, state):
@@ -214,7 +214,7 @@ class EpidemicData():
     '''
     def __init__(self, G, mu, nu, duration, infected_t0):
         '''
-        Initializes the 'EpidemicData' class with the network and the epidemic
+        Initializes the 'SIR_Model' class with the network and the epidemic
         parameters.
 
         Parameters:
@@ -251,7 +251,7 @@ class EpidemicData():
         state[infected_index] = 1
         return state
     
-    def evolution_epidemic_SIR(self, G, plot_spread = False):
+    def evolution(self, G, plot_spread = False):
         '''
         Simulates the evolution of the epidemic using the SIR model.
         
@@ -413,8 +413,8 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
     ----------
     G : networkx.Graph
         The input network graph.
-    epidemic_data : EpidemicData
-        An instance of EpidemicData to simulate the epidemic on the network.
+    epidemic_data : SIR_Model
+        An instance of SIR_Model to simulate the epidemic on the network.
     All the attributes included in the 'GetRemotionFrequencies' class.
     
     Methods:
@@ -426,7 +426,7 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
     Notes:
     -----
     This class is connected to 'GetRemotionFrequencies' by inheritance and to 
-    EpidemicData by composition.
+    SIR_Model by composition.
     '''
     
     def __init__(self, G, mu, nu, duration, infected_t0, max_removal_rate = 0.05, num_points = 20):
@@ -451,7 +451,7 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
             The number of points for calculating the removal frequencies (default is 20).
         '''
         super().__init__(G, max_removal_rate, num_points)
-        self.epidemic_data = EpidemicData(G, mu, nu, duration, infected_t0)
+        self.epidemic_data = SIR_Model(G, mu, nu, duration, infected_t0)
         self.G = G
         
         
@@ -525,7 +525,7 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
             recovered = np.zeros((num_simulations, self.epidemic_data.duration))
             
             for simulation in range(num_simulations): 
-                infected[simulation, :], recovered[simulation, :] = self.epidemic_data.evolution_epidemic_SIR(G_modified, plot=False)
+                infected[simulation, :], recovered[simulation, :] = self.epidemic_data.evolution(G_modified, plot=False)
             
             # Calculate the epidemic property
             # checking if the property function requires recovery evolution
