@@ -1,16 +1,25 @@
+# netwok constants
+[network] 
+# number of nodes
+N = 1000   
+# probability to connect with other nodes
+P = 0.004 
 
-[network] # netwok constants
-N = 1000   # number of nodes
-P = 0.004  # probability to connect with other nodes
-
-[epidemic] # epidemic constants
-MU = 0.2         # infection prob
-NU = 0.05        # recovery prob
-DURATION = 50     # duration of the simulation
-INFECTED_T0 = 1  # number of infected nodes at the fist time step
+# epidemic constants
+[epidemic] 
+# infection prob
+MU = 0.2        
+# recovery prob
+NU = 0.05 
+# duration of the simulation       
+DURATION = 50
+# number of infected nodes at the fist time step    
+INFECTED_T0 = 1  
 # for multiple simulations (multiple simulation are kept on to include randomness in the results)
-NUM_SIMULATIONS = 100  # number of simulations to run
-NUM_POINTS = 15 # number of data to acquire
+# number of simulations to run
+NUM_SIMULATIONS = 100  
+# number of data to acquire
+NUM_POINTS = 15 
 
-[seed] # for reproducibility
+[seed] 
 SEED = 102
