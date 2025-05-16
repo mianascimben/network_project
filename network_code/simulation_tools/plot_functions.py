@@ -119,7 +119,7 @@ def plot_multiple_data(x_data, y_data, labels, colors=None, markers=None, linest
     
     return fig, ax
 
-def make_plot(freq, data_error, data_attack, ylabel, title):
+def make_plot(freq, data_error, data_attack, ylabel, title, **kwargs):
     """
     Generates a 2-line plot comparing the effect of random errors and targeted 
     attacks on a given network metric across node removal frequencies.
@@ -140,7 +140,11 @@ def make_plot(freq, data_error, data_attack, ylabel, title):
 
     title : str
         Title of the plot.
-
+    
+    **kwargs : dict
+        Parameters used in the creation of the network and/or the epidedemic 
+        simulation 
+    
     Returns
     -------
     fig : matplotlib.figure.Figure
@@ -159,6 +163,7 @@ def make_plot(freq, data_error, data_attack, ylabel, title):
         title = title
         )
     return fig, ax
+
 
 def make_plot_fragmentation(freq, S_error, S_attack, s_error, s_attack,  ylabel, title):
     """
@@ -260,4 +265,6 @@ def make_plot_2networks(freq, data_error_ER, data_attack_ER, data_error_SF, data
                     title = title
                     )
     return fig, ax
+
+
 
