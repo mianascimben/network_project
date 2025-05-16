@@ -78,8 +78,43 @@ python setup.py install
 
 
 ## Usage
-The programm can be used through python script.
+You can create your pipeline in your Python scripts or run simulations directly via command line.
 
+To run the network-project via command line you should digit ```network_code``` and use the following flags:
+```-n -m -f```
+To have a list of all flags via commandline digit the following:
+```
+> python network_code -h
+usage: network_code [-h] -n {ER,SF,ER_SF,airports} -m {epidemic,structural} -f FEATURE [-N N] [-p P] [-seed SEED]
+                    [-max_rate MAX_RATE] [-mu MU] [-nu NU] [-steps STEPS] [-infected INFECTED] [-num_sim NUM_SIM]
+                    [-num_points NUM_POINTS]
+
+Code for analysing how attacks and errors on networks may affect network structure andepidemic spreading.
+
+options:
+  -h, --help            show this help message and exit
+  -n {ER,SF,ER_SF,airports}
+                        Select the type of network to study.
+  -m {epidemic,structural}
+                        Select the type of simulation to run on the network.
+  -f FEATURE            Select the feature to analyze during the simulation. • For '-m epidemic' → peak, t_peak,
+                        duration, total_infected • For '-m structural' → connectivity, fragmentation
+  -N N                  Number of nodes of the network, default = 100
+  -p P                  Probability for ER to connect with other nodes, default = 0.04
+  -seed SEED            For reproducibility, default = 102
+  -max_rate MAX_RATE    The maximum rate of removable nodes, default = 0.5
+  -mu MU                Probability of disease transmission, default = 0.2
+  -nu NU                Probability to recover from infection, default = 0.05
+  -steps STEPS          Number of steps the epidemics simulation lasts, default = 50
+  -infected INFECTED    Number of infected cases at the epidemic starting, default = 1
+  -num_sim NUM_SIM      Number of simulations of the epidemic to run to average the epidemic features, default = 100
+  -num_points NUM_POINTS
+                        Number of data to acquire, default = 15
+```
+Here an example from the command line:
+```
+python network_code -n SF -m epidemic -f duration - N 50 -steps 25 -num_sim 20 -num_points 15
+```
 # To be changed 
 In the sections ['how-to-guide'](https://github.com/mianascimben/network-project/tree/main/how-to-guide) there is a list of examples that will guide you in recreating the same simulations and analysis showed in the ['report'](https://github.com/mianascimben/network-project/blob/main/report.pdf). In particular, one file is about simulating error/attack on networks and visualising the changes in graph feature; the other one focuses on simulating an epidemic and investigating on how nodes removing affects its spreading through analyzing different epidemic features. 
 
