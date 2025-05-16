@@ -1,8 +1,8 @@
 '''
 
-This script defines the classes implementing the simulation for analyzing
-the changing in the network and epidemic properties when node removals are 
-performed. 
+    This script defines the classes implementing the simulation for analyzing
+    the changing in the network and epidemic properties when node removals are 
+    performed. 
 
 '''
 
@@ -525,7 +525,7 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
             recovered = np.zeros((num_simulations, self.epidemic_data.duration))
             
             for simulation in range(num_simulations): 
-                infected[simulation, :], recovered[simulation, :] = self.epidemic_data.evolution(G_modified, plot=False)
+                infected[simulation, :], recovered[simulation, :] = self.epidemic_data.evolution(G_modified, plot_spread = False)
             
             # Calculate the epidemic property
             # checking if the property function requires recovery evolution
