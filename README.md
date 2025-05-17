@@ -76,10 +76,10 @@ pip install -r requirements.txt
 python setup.py install
 ```
 
-
 ## Usage
 You can create your pipeline in your Python scripts or run simulations directly via command line.
 
+### Command line
 To run the network-project via command line you should digit ```network_code``` and use the following flags:
 ```-n -m -f```
 To have a list of all flags via commandline digit the following:
@@ -115,8 +115,9 @@ Here an example from the command line:
 ```
 python network_code -n SF -m epidemic -f duration - N 50 -steps 25 -num_sim 20 -num_points 15
 ```
-# To be changed 
-In the sections ['how-to-guide'](https://github.com/mianascimben/network-project/tree/main/how-to-guide) there is a list of examples that will guide you in recreating the same simulations and analysis showed in the ['report'](https://github.com/mianascimben/network-project/blob/main/report.pdf). In particular, one file is about simulating error/attack on networks and visualising the changes in graph feature; the other one focuses on simulating an epidemic and investigating on how nodes removing affects its spreading through analyzing different epidemic features. 
+
+### Python pipeline 
+In ['how-to-guide'](https://github.com/mianascimben/network-project/tree/main/how-to-guide) there are two examples that shows how to bulid the pipeline for all the possibile simulations and analysis. In particular, one file focuses on simulating errors and attacks on networks and visualizing the resulting changes in graph structure, while the other simulates an epidemic and analyzes how node removal affects its spread by examining various epidemic characteristics.
 
 ## References
 >1. Albert, R. et al. (2000). "Error and attack tolerance of complex networks". Nature, vol. 406,6794.
