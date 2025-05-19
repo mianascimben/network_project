@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import os
 from setuptools import setup
 
@@ -24,9 +21,7 @@ def dump_version_file (
       String of the version code as major.minor.revision
   '''
 
-  script = f'''#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
+  script = f'''
 __author__  = '{author}'
 __email__ = '{email}'
 
@@ -40,13 +35,13 @@ __version__ = '{version}'
     fp.write(script)
 
 
-PACKAGE_NAME = 'network-project'
+PACKAGE_NAME = 'network_project'
 AUTHOR = 'Mia Nascimben'
 EMAIL = 'nascimbenmia@gmail.com'
 REQUIRES_PYTHON = '>=3.8'
 PACKAGE_VERSION = '0.0.1'
 DESCRIPTION = 'Analysis of error/attack effects on networks information spreading'
-URL = 'https://github.com/mianascimben/network-project'
+URL = 'https://github.com/mianascimben/network_project'
 MAINTAINER = AUTHOR
 MAINTAINER_EMAIL = EMAIL
 DOWNLOAD_URL = URL
