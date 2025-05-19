@@ -6,7 +6,7 @@ This script define some useful functions to plot data using a predefined format
 
 import numpy as np
 import matplotlib.pyplot as plt
-from simulation_tools.pdf_functions import exp_model, fit_data
+from .pdf_functions import exp_model, fit_data
 
 
 def data_exponential_plot(x, y, errors=True, xlabel='x', ylabel='y', title='x v/s y'):

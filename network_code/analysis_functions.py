@@ -21,7 +21,7 @@ import networkx as nx
 import numpy as np
 import pickle 
 import os
-from simulation_tools.remotion_functions import error, attack 
+from .remotion_functions import error, attack 
 
 #-------------------------------GRAPH FEATURES---------------------------------
 
@@ -439,7 +439,7 @@ def generate_network(network_type, *kwargs):
         case "airports":
             
             CURRENT_DIR = os.path.dirname(__file__)#
-            MAIN_DIR = os.path.abspath(os.path.join(CURRENT_DIR, '..'))#
+            MAIN_DIR = os.path.abspath(os.path.join(CURRENT_DIR, '.'))#
             GPICKLE_PATH = os.path.join(MAIN_DIR, 'flight.gpickle')
 
             with open(GPICKLE_PATH, 'rb') as f:

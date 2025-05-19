@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time 
 import pickle
-from simulation_tools.analysis_functions  import *
+from simulation_tools.analysis_functions import *
 from simulation_tools.simulation import ToleranceSimulation, EpidemicToleranceSimulation
 from simulation_tools.plot_functions import make_plot, make_plot_fragmentation, make_plot_2networks
 

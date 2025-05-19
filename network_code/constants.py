@@ -1,4 +1,4 @@
-from simulation_tools.analysis_functions import peak, t_peak, epidemic_duration, total_infected
+from .analysis_functions import peak, t_peak, epidemic_duration, total_infected
 
 EPIDEMICS_FUNCS = {
     'peak': [peak, 'Infection peak'],
