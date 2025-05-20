@@ -29,13 +29,13 @@ __version__ = '{version}'
 '''
 
   filename = os.path.abspath(os.path.dirname(__file__))
-  filename = f'{filename}/network_project/__version__.py'
+  filename = f'{filename}/network_code/__version__.py'
 
   with open(filename, 'w') as fp:
     fp.write(script)
 
 
-PACKAGE_NAME = 'network_project'
+PACKAGE_NAME = 'network_code'
 AUTHOR = 'Mia Nascimben'
 EMAIL = 'nascimbenmia@gmail.com'
 REQUIRES_PYTHON = '>=3.8'
@@ -87,7 +87,7 @@ setup(
     'Programming Language :: Python :: Implementation :: CPython',
   ],
   entry_points={'console_scripts': [
-    'simulation = network_code.__main__:main',
+    'network_code = network_code.__main__:main',
     ],
   },
 )
