@@ -56,24 +56,18 @@ In ['requirements.txt'](https://github.com/mianascimben/network-project/blob/mai
 
 Python version supported : ![Python version](https://img.shields.io/badge/python-3.8|3.9|3.10|3.11-blue.svg)
 
-1. Clone the 'network-project' repository in from GitHub:
+1. Clone the 'network_project' repository from GitHub and enter in its the directory:
 ```bash
-git clone https://github.com/mianascimben/network-project
+git clone https://github.com/mianascimben/network_project
+cd network_project
 ```
-
-2. Enter the directory of the cloned package:
+2. If necessary install the requirements by using:
 ```bash
-cd network-project
+python -m pip install -r requirements.txt
 ```
-
-3. If necessary install the requirements by using:
+4. Install the package in *editable* mode.
 ```bash
-pip install -r requirements.txt
-```
-
-4. Run the installation command using ['setup.py'](https://github.com/mianascimben/network-project/blob/main/setup.py). This will install the package and its dependencies in your Python environment:
-```bash
-python setup.py install
+python -m pip install -e .
 ```
 
 ## Usage
@@ -84,7 +78,7 @@ To run the network-project via command line you should digit ```network_code``` 
 ```-n -m -f```
 To have a list of all flags via commandline digit the following:
 ```
-> python network_code -h
+> network_code -h
 usage: network_code [-h] -n {ER,SF,ER_SF,airports} -m {epidemic,structural} -f FEATURE [-N N] [-p P] [-seed SEED]
                     [-max_rate MAX_RATE] [-mu MU] [-nu NU] [-steps STEPS] [-infected INFECTED] [-num_sim NUM_SIM]
                     [-num_points NUM_POINTS]
