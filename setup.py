@@ -29,7 +29,7 @@ __version__ = '{version}'
 '''
 
   filename = os.path.abspath(os.path.dirname(__file__))
-  filename = f'{filename}/network-project/__version__.py'
+  filename = f'{filename}/network_project/__version__.py'
 
   with open(filename, 'w') as fp:
     fp.write(script)
