@@ -27,6 +27,5 @@ jobs:
 
       - name: Run network_code
         run: |
-          chcp 65001
-          network_code -h
-          shell: cmd
+          network_code -n ER -m structural -f connectivity 
+        
