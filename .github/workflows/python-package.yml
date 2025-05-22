@@ -27,5 +27,7 @@ jobs:
 
       - name: Run network_code
         run: |
-          network_code -n ER -m structural -f connectivity 
+          network_code -n ER -m structural -f connectivity
+        env:
+          MPLBACKEND: Agg
         
