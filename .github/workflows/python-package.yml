@@ -27,5 +27,4 @@ jobs:
 
       - name: Run networ_code
         run: |
-          python -m network_code -h
-          python -m network_code -n ER -m structural -f connectivity 
+          network_code -h
