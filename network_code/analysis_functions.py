@@ -59,49 +59,34 @@ def diameter(G):
     information flow in the graph, representing the average distance between 
     all pairs of nodes.
     '''
-    
-    # The cases of directed and undirected graphs need different definition
-    # of 'connected' and 'strongly connected'.
-    if G.is_directed(): 
-        if nx.is_strongly_connected(G):
-            diameter = nx.average_shortest_path_length(G)  
-        else : 
-            # nx.average_shortest_path_length(G) gives error if isolated points
-            # are met. To avoid this, it is preferred to store 
-            # the shortest path length among all pairs of nodes 
-            # and then average it. This method works even with isolated points. 
-            shortest_paths = nx.shortest_path_length(G)
-            
-            # Extract path lengths into a list, skipping paths of length 
-            # 0 (because irrilevant)
-            shortest_path_list = [
-                length for node, paths in shortest_paths
-                for length in paths.values() if length > 0
-                ]
-
-            shortest_path_list = np.array(shortest_path_list, dtype=np.int32)
-            
-            diameter = np.mean(shortest_path_list)
-            
-    else : # undirected case   
-        if nx.is_connected(G):
-            diameter = nx.average_shortest_path_length(G) 
+    # case not empty graph
+    if G.number_of_nodes() > 0:
         
+        # The cases of directed and undirected graphs need different definition
+        # of 'connected' and 'strongly connected'.
+        directed_strongly_connected = G.is_directed() and nx.is_strongly_connected(G)
+        undirected_connected = not G.is_directed() and nx.is_connected(G)
+        
+        if directed_strongly_connected or  undirected_connected: 
+            diameter = nx.average_shortest_path_length(G)  
+            
         else:    
             shortest_paths = nx.shortest_path_length(G)
-            
+                
             shortest_path_list = [
                 length for node, paths in shortest_paths
                 for length in paths.values() if length > 0
                 ]
-            
+            # case of a graph without edges
             if len(shortest_path_list) == 0: 
                 diameter = 0
-                
+                    
             else:
                 shortest_path_list = np.array(shortest_path_list, dtype=np.int32)
-        
                 diameter = np.mean(shortest_path_list)
+                
+    else: #empty graph
+        diameter = 0
     return diameter
   
 def largest_connected_component_size(G):
@@ -150,15 +135,23 @@ def largest_connected_component_size(G):
     (undirected) component. 
     
     '''
-    # divide the case of directed and undirected graphs because of the difference
-    # in the definition of the connected components
-    if G.is_directed() : 
-        largest_cc = max(nx.weakly_connected_components(G), key=len)
+    # case of not empty graph
+    if G.number_of_nodes() > 0 :
+        # divide the case of directed and undirected graphs because of the difference
+        # in the definition of the connected components
+        if G.is_directed() : 
+            largest_cc = max(nx.weakly_connected_components(G), key=len)
+            
+        else : # undirected case
+            largest_cc = max(nx.connected_components(G), key=len)
+            
         largest_cc_size = len(largest_cc)
-    else : # undirected case
-        largest_cc = max(nx.connected_components(G), key=len)
-        largest_cc_size = len(largest_cc)
-    return largest_cc_size/nx.number_of_nodes(G)
+        result = largest_cc_size/nx.number_of_nodes(G)
+        
+    else: # empty graph
+        result = 0
+        
+    return result
 
 def average_size_connected_components(G):
     '''
@@ -189,16 +182,20 @@ def average_size_connected_components(G):
     #(see docstring of 'largest_connected_component_size()')
     if G.is_directed() : 
         sizes = [len(c) for c in sorted(nx.weakly_connected_components(G), key=len)]
-        # erase the biggest (the last one) because we are interested in the behaviour 
-        # of all the other components
-        sizes_without_the_biggest = sizes[:-1]
-        average_size = np.mean(sizes_without_the_biggest)
+        
     else :  # undirected case
         sizes = [len(c) for c in sorted(nx.connected_components(G), key=len)]
-        sizes_without_the_biggest = sizes[:-1]
-        if len(sizes_without_the_biggest) == 0: 
-            average_size = 0
-        else: average_size = np.mean(sizes_without_the_biggest)
+        
+    # erase the biggest (the last one) because we are interested in the behaviour 
+    # of all the other components
+    sizes_without_the_biggest = sizes[:-1]
+    
+    if len(sizes_without_the_biggest) == 0: 
+        average_size = 0
+        
+    else: 
+        average_size = np.mean(sizes_without_the_biggest)
+        
     return average_size
     
     
@@ -424,29 +421,25 @@ def generate_network(network_type, *kwargs):
 
     """
 
-    match network_type:
-        case "ER":
-            N = kwargs[0]
-            p = kwargs[1]
-            G = nx.erdos_renyi_graph(N, p, directed=False)
-            return G
-        case "SF":
-            N = kwargs[0]
-            p = kwargs[1]
-            k = N * p  
-            G = nx.barabasi_albert_graph(N, int(k/2))
-            return G
-        case "airports":
-            
-            CURRENT_DIR = os.path.dirname(__file__)#
-            MAIN_DIR = os.path.abspath(os.path.join(CURRENT_DIR, '.'))#
-            GPICKLE_PATH = os.path.join(MAIN_DIR, 'flight.gpickle')
+    if network_type == "ER":
+        N = kwargs[0]
+        p = kwargs[1]
+        G = nx.erdos_renyi_graph(N, p, directed=False)
+        return G
+    elif network_type == "SF":
+        N = kwargs[0]
+        p = kwargs[1]
+        k = N * p  
+        G = nx.barabasi_albert_graph(N, int(k/2))
+        return G
+    elif network_type == "airports":
+        CURRENT_DIR = os.path.dirname(__file__)#
+        MAIN_DIR = os.path.abspath(os.path.join(CURRENT_DIR, '.'))#
+        GPICKLE_PATH = os.path.join(MAIN_DIR, 'flight.gpickle')
 
-            with open(GPICKLE_PATH, 'rb') as f:
-                G = pickle.load(f)
-            return G
-        case _:
-            print("Error: Type of network not supported.")
+        with open(GPICKLE_PATH, 'rb') as f:
+            G = pickle.load(f)
+        return G
             
 def connectivity_analysis(sim):
     '''
