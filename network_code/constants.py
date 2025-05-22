@@ -6,3 +6,4 @@ EPIDEMICS_FUNCS = {
     'duration': [epidemic_duration, 'Epidemic duration'],
     'total_infected': [total_infected, 'Fraction of total infected cases']
     }
+

@@ -10,6 +10,7 @@ import networkx as nx
 import numpy as np
 import inspect
 import matplotlib.pyplot as plt
+from .plot_functions import display_epidemic
 
 
 class GetRemotionFrequencies: 
@@ -22,9 +23,9 @@ class GetRemotionFrequencies:
     Attributes:
     ----------
     max_removal_rate : float, optional
-        Maximum removal rate for the nodes in the network (default is 0.05).
+        Maximum removal rate for the nodes in the network (default is 0.5).
     num_points : int, optional
-        Total number of removal frequencies to be generated (default is 20).
+        Total number of removal frequencies to be generated (default is 15).
     number_of_nodes : int
         Total number of nodes in the network.
     frequencies_cleaned : numpy.ndarray
@@ -40,15 +41,15 @@ class GetRemotionFrequencies:
         maximum removal rate and the number of points.
     '''
     
-    def __init__(self,G, max_removal_rate = 0.05, num_points = 20):
+    def __init__(self, G, max_removal_rate = 0.5, num_points = 15):
         '''Constructs all the necessary attributes for the subclasses.
         
         Parameters:
         ----------
         max_removal_rate : float, optional
-            Maximum removal rate for the nodes in the network (default is 0.05).
+            Maximum removal rate for the nodes in the network (default is 0.5).
         num_points : int, optional
-            Total number of removal frequencies to be generated (default is 20).
+            Total number of removal frequencies to be generated (default is 15).
         number_of_nodes : int
             Total number of nodes in the network.
         frequencies_cleaned : numpy.ndarray
@@ -117,7 +118,7 @@ class ToleranceSimulation(GetRemotionFrequencies):
     This class is connected to 'GetRemotionFrequencies' by inheritance.
     '''
     
-    def __init__(self, G, max_removal_rate = 0.05, num_points = 20):
+    def __init__(self, G, max_removal_rate = 0.5, num_points = 15):
         '''
         Initializes the ToleranceSimulation with a graph, maximum removal rate, and number of points.
 
@@ -126,10 +127,10 @@ class ToleranceSimulation(GetRemotionFrequencies):
         G : networkx.Graph
             The input network graph.
         max_removal_rate : float, optional
-            The maximum removal rate for the nodes (default is 0.05).
+            The maximum removal rate for the nodes (default is 0.5).
         num_points : int, optional
             The number of points for calculating the removal frequencies 
-            (default is 20).
+            (default is 15).
         
         '''
         super().__init__(G, max_removal_rate, num_points)
@@ -307,10 +308,7 @@ class SIR_Model():
         
         if plot_spread:
             pos = nx.circular_layout(G)  # fixed layout for the graph
-            node_colors = ['red' if state[node] == 1 else 'green' if state[node] == -1 else 'skyblue' for node in G.nodes()]
-            nx.draw(G, pos, with_labels=True, node_color=node_colors)
-            plt.title("Time = 0, SIR model")
-            plt.show() 
+            display_epidemic(G, state, pos) 
             
         infection_rate = []
         recovered_rate = []
@@ -327,10 +325,7 @@ class SIR_Model():
             state = recovered_state
             
             if plot_spread:
-                node_colors = ['red' if recovered_state[node] == 1 else 'green' if recovered_state[node] == -1 else 'skyblue' for node in G.nodes()]
-                nx.draw(G, pos, with_labels=True, node_color=node_colors)
-                plt.title(f"Time = {time}")
-                plt.show()
+                display_epidemic(G, recovered_state, pos)
                 
         return np.array(infection_rate), np.array(recovered_rate)
         
@@ -429,7 +424,7 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
     SIR_Model by composition.
     '''
     
-    def __init__(self, G, mu, nu, duration, infected_t0, max_removal_rate = 0.05, num_points = 20):
+    def __init__(self, G, mu, nu, duration, infected_t0, max_removal_rate = 0.5, num_points = 15):
         '''
         Initializes the EpidemicToleranceSimulation with the network and epidemic parameters.
 
@@ -446,9 +441,9 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
         infected_t0 : int
             The initial number of infected nodes.
         max_removal_rate : float, optional
-            The maximum removal rate for the nodes (default is 0.05).
+            The maximum removal rate for the nodes (default is 0.5).
         num_points : int, optional
-            The number of points for calculating the removal frequencies (default is 20).
+            The number of points for calculating the removal frequencies (default is 15).
         '''
         super().__init__(G, max_removal_rate, num_points)
         self.epidemic_data = SIR_Model(G, mu, nu, duration, infected_t0)

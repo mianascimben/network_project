@@ -5,7 +5,8 @@ This script define some useful functions to plot data using a predefined format
 '''
 
 import matplotlib.pyplot as plt
-
+import networkx as nx
+import time
 
 def plot_multiple_data(x_data, y_data, labels, colors=None, markers=None, linestyles=None,
                        ylabel='y', xlabel='x', title='x v/s y'):
@@ -205,5 +206,41 @@ def make_plot_2networks(freq, data_error_ER, data_attack_ER, data_error_SF, data
                     )
     return fig, ax
 
+def display_epidemic(graph, states, layout):
+    '''
+    Displays the graph structure with the nodes colors representing their state
+    at each time step:
+        red nodes: infected state
+        green nodes: recovered state
+        blue nodes: susceptible state
 
+    Parameters
+    ----------
+    graph : networkx.classes.graph.Graph
+        The graph on which the epidemic is run.
+    
+    states : np.array or list
+         Each element of the `states` can be (-1,0,1). It stores the states of 
+         the network nodes.
+         That means: if the first element is `0`, then the node labeled as 'zero'
+         is healthy.
+         
+    layout : dict
+        Fixes the layout/disposition of the graph
+         
+    Returns
+    -------
+    None.
+    
+    Note: 
+    -----
+    The plot is not returned as a figure but directly shown up.
+
+    '''
+    node_colors = ['red' if states[node] == 1 else 'green' if states[node] == -1 else 'skyblue' for node in graph.nodes()]
+    nx.draw(graph, layout, with_labels=True, node_color=node_colors)
+    plt.title(f"Time = {time}, SIR model")
+    plt.show() 
+    
+    
 
