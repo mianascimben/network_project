@@ -18,6 +18,7 @@ Here I give a brief overview of the topic; for a detailed expanation of the meth
 + **Errors**: an error corresponds to the remotion of a node randomly chosen among the whole set.
 + **Attacks**: an attack is the remotion of the most connected node of the network.
 An attack or an error implies, together with the node, the removal of all its links.
+
 Now, if you think of a network fully connected, the lack of one node doesn't make any difference in the level of network connectivity or in the information spreading: nonetheless that node is missing, there are many other paths the information can go through to spread. On the other hand, think of a network where all the nodes are connected to one central node: if you remove that central node, the network will result in a bunch of isolated nodes which don't communicate.
 This is a simple example to understand the impact that the network topology can have when the network undergoes node remotion. 
 
