@@ -97,6 +97,7 @@ def make_plot(freq, data_error, data_attack, ylabel, title, **kwargs):
         x_data = [freq, freq],
         y_data = [data_error, data_attack],
         labels = ['error','attack'],
+        colors = ['blue', 'red'],
         markers = ['o','o'],
         linestyles = ['-','-'],
         ylabel = ylabel, xlabel='Frequency',
