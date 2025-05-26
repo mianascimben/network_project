@@ -11,17 +11,20 @@
 
   
 ## Overview 
-This repository hosts the implementation of a python code useful for analysing how attacks and errors on networks may affect network structure and epidemic spreading. 
+This repository hosts the implementation of a python code useful for analysing how attacks and errors on networks may affect network structure and epidemic spreading. One use of this repository could be to examine how a network’s topology influences its resilience when undergoes errors or attacks. 
+Here I give a brief overview of the topic; for a detailed expanation of the methods and the results obtained see ['report'](url).
+
+#### What errors and attacks are?
++ **Errors**: an error corresponds to the remotion of a node randomly chosen among the whole set.
++ **Attacks**: an attack is the remotion of the most connected node of the network.
+An attack or an error implies, together with the node, the removal of all its links.
+Now, if you think of a network fully connected, the lack of one node doesn't make any difference in the level of network connectivity or in the information spreading: nonetheless that node is missing, there are many other paths the information can go through to spread. On the other hand, think of a network where all the nodes are connected to one central node: if you remove that central node, the network will result in a bunch of isolated nodes which don't communicate.
+This is a simple example to understand the impact that the network topology can have when the network undergoes node remotion. 
+
 The networks under study are: 
 + **Erdos-Renyi (ER)**: Erdos-Renyi network is a type of random graph composed by a set of _N_ nodes which has been randonly linked parwise with a probability _p_; so the degree (number of total links) of each node follows, _k_, follows a Binomial distribution _Bin(N-1, p)_, which tends to a Poisson distribution for large _N_. Roughly speaking, this implies that most of nodes in an ER network have a similar number of connections, and the network has no significant hubs.  
 + **Scale-Free (SF)**: A scale-free network is a network whose degree distribution follows a power law _P(k)∝ k<sup>-γ</sup>_. This means that the large majority of the nodes are poorly connected, while there is a very small fraction, called _hubs_, that are highly connected.
 + **Global Air Transportation**: A real-world network where nodes represent airports, and edges correspond to airlines connecting them. This network displays a scale-free behaviour. The source of the dataset is ['Kaggle'](https://www.kaggle.com/datasets/thedevastator/global-air-transportation-network-mapping-the-wo).
-
-This study examines how a network’s topology influences its resilience when undergoes errors or attacks. 
-+ **Errors**: an error corresponds to the remotion of a node randomly chosen among the whole set.
-+ **Attacks**: an attack is the remotion of the most connected node of the network.
-
-An attack or an error implies, together with the node, the removal of all its links. 
 
 To understand the impact of errors/attacks on the network structure you can calculate different features that embodies the connectivity of the graph as the nodes removed increase:
 + **_d_**: the diameter measures how topologically near two nodes are; the smaller _d_ is, theshorter the shortest path between them.
@@ -35,15 +38,14 @@ To understand the impact of errors/attacks on the network structure you can calc
   - Show a more uniform response to both errors and attacks.
   - Less dependent on any individual node, so fragmentation under targeted attacks occurs more gradually.
 -Air Traffic network, records results that align with the characteristics of a Scale-Free topology.
-
-Furthermore, the study incorporates simulations of epidemic spreading using the SIR model to quantify how errors/attacks affect disease transmission dynamics. Through the SIR model, each node/individual within the network can be in one of three stages: Susceptible (S), Infected (I), or Recovered (R). Susceptible nodes can be infected only by the infected nodes they are attached to; once infected, they may recover and acquire immunization. The epidemic ends when all the infected nodes move to the recovered stage. The epidemic dynamics are represented by the infective and recovery curves, which correspond respectively to the count of infected and recovered cases over time (Figure 2).
-The reasons that lead network structure to influence epidemic dynamics are researched in the analysis of the epidemic dynamics, as shown in Figure 2:
-+ _peak_  
-+ _t_peak_
-+ _epidemic_duration_
-+ _total_infected_
-
-Results show that while SF networks are robust to random errors, they are highly vulnerable to targeted attacks due to their reliance on a few central hubs. Conversely, the homogeneous degree distribution of ER networks makes them less affected by specific attacks or errors 
+#### Epidemic simulation with SIR model
+Furthermore, the study incorporates simulations of epidemic spreading using the SIR model to quantify how errors/attacks affect disease transmission dynamics. Through the SIR model, each node within the network can be in one of three stages: Susceptible (S), Infected (I), or Recovered (R). Susceptible nodes can be infected only by the infected nodes they are attached to; once infected, they may recover and acquire immunization. The epidemic ends when all the infected nodes move to the recovered stage. The epidemic dynamics are represented by the infective and recovery curves, which correspond respectively to the count of infected and recovered cases over time (Figure 2).
+The reasons that lead network structure to influence epidemic dynamics are researched in the analysis of these curves, as shown in Figure 2:**add image**
++ **peak**: the maximum number of infected cases during all the epidemic
++ **t_peak**: the time step at which the infection peak is reached
++ **epidemic_duration**: how long the epidemic has lasted 
++ **total_infected**: the total number of infected cases that have been recorded during all the epidemic (even the recovered ones).
+**add image**
 
 -In Scale-Free networks, targeted attacks drastically reduce epidemic metrics (duration, total infections, peak infection), while random errors have minimal impact, reflecting the network’s robustness to diffuse disruptions.
 -In Erdős–Rényi networks, at high attack intensities they eventually follow the Scale-Free behavior, exhibiting a sharp decline not only in connectivity but also in epidemic measures.
