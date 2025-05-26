@@ -30,26 +30,25 @@ To understand the impact of errors/attacks on the network structure you can calc
 + **_d_**: the diameter measures how topologically near two nodes are; the smaller _d_ is, theshorter the shortest path between them.
 + **_S_**: the size of the giant components detects the disgragation process from one single aggregate into smaller and disconnected subgroups.  
 + **_<_s_>_**: the average size of all the connected components except the largest one: reveals the organization of the fragments into smaller and bigger clusters following fragmentation.
-**add image**
-- Scale-Free networks rely on a few highly connected hubs, explaining: 
-  - Resilience to random errors (removing random nodes barely affects connectivity).
-  - Vulnerability to targeted attacks: removing a small fraction of hubs quickly fragments the giant component and collapses overall connectivity.
-- Erdős–Rényi networks due to their homogeneous degree distribution:
-  - Show a more uniform response to both errors and attacks.
-  - Less dependent on any individual node, so fragmentation under targeted attacks occurs more gradually.
--Air Traffic network, records results that align with the characteristics of a Scale-Free topology.
+
+#### Structural Results: plots
+
+![diameter and fragmentation images](https://github.com/mianascimben/network_project/blob/main/images/graph_analysis_diameter_plot.PNG)
+![](https://github.com/mianascimben/network_project/blob/main/images/graph_analysis_S_plot.PNG)
+
 #### Epidemic simulation with SIR model
 Furthermore, the study incorporates simulations of epidemic spreading using the SIR model to quantify how errors/attacks affect disease transmission dynamics. Through the SIR model, each node within the network can be in one of three stages: Susceptible (S), Infected (I), or Recovered (R). Susceptible nodes can be infected only by the infected nodes they are attached to; once infected, they may recover and acquire immunization. The epidemic ends when all the infected nodes move to the recovered stage. The epidemic dynamics are represented by the infective and recovery curves, which correspond respectively to the count of infected and recovered cases over time (Figure 2).
-The reasons that lead network structure to influence epidemic dynamics are researched in the analysis of these curves, as shown in Figure 2:**add image**
+The reasons that lead network structure to influence epidemic dynamics are researched in the analysis of these curves, as shown in Figure 2:
+
+![](https://github.com/mianascimben/network_project/blob/main/images/scheme.PNG)
+
 + **peak**: the maximum number of infected cases during all the epidemic
 + **t_peak**: the time step at which the infection peak is reached
 + **epidemic_duration**: how long the epidemic has lasted 
 + **total_infected**: the total number of infected cases that have been recorded during all the epidemic (even the recovered ones).
-**add image**
+#### Epidemic results: plots 
+![epidemic images](https://github.com/mianascimben/network_project/blob/main/images/epidemic_ER_SF_plot.PNG)
 
--In Scale-Free networks, targeted attacks drastically reduce epidemic metrics (duration, total infections, peak infection), while random errors have minimal impact, reflecting the network’s robustness to diffuse disruptions.
--In Erdős–Rényi networks, at high attack intensities they eventually follow the Scale-Free behavior, exhibiting a sharp decline not only in connectivity but also in epidemic measures.
-- The real-world air traffic network mirrors the behavior of SF networks, underscoring the importance of hubs in maintaining connectivity. The removal of the largest 10% of airports effectively halts epidemic spread, demonstrating the critical role of key nodes in disease containment.
 ## Prerequisites
 
 In ['requirements.txt'](https://github.com/mianascimben/network-project/blob/main/requirements.txt) there is a list of all the libraries needed to run the package properly.
