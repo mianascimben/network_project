@@ -12,7 +12,7 @@
   
 ## Overview 
 This repository hosts the implementation of a python code useful for analysing how attacks and errors on networks may affect network structure and epidemic spreading. One use of this repository could be to examine how a network’s topology influences its resilience when undergoes errors or attacks. 
-Here I give a brief overview of the topic; for a detailed expanation of the methods and the results obtained see ['report'][url](https://github.com/mianascimben/network_project/blob/main/report.pdf).
+Here I give a brief overview of the topic; for a detailed expanation of the methods and the results obtained see ['report'](https://github.com/mianascimben/network_project/blob/main/report.pdf).
 
 Here the values of the constants used to get the plots shown in the README and in the report.
 | Command | Value |
