@@ -12,7 +12,7 @@
   
 ## Overview 
 This repository hosts the implementation of a python code useful for analysing how attacks and errors on networks may affect network structure and epidemic spreading. One use of this repository could be to examine how a network’s topology influences its resilience when undergoes errors or attacks. 
-Here I give a brief overview of the topic; for a detailed expanation of the methods and the results obtained see ['report'](url).
+Here I give a brief overview of the topic; for a detailed expanation of the methods and the results obtained see ['report'][url](https://github.com/mianascimben/network_project/blob/main/report.pdf).
 
 Here the values of the constants used to get the plots shown in the README and in the report.
 | Command | Value |
@@ -51,8 +51,8 @@ To understand the impact of errors/attacks on the network structure you can calc
 ![](https://github.com/mianascimben/network_project/blob/main/images/graph_analysis_S_plot.PNG)
 
 #### Epidemic simulation with SIR model
-Furthermore, the study incorporates simulations of epidemic spreading using the SIR model to quantify how errors/attacks affect disease transmission dynamics. Through the SIR model, each node within the network can be in one of three stages: Susceptible (S), Infected (I), or Recovered (R). Susceptible nodes can be infected only by the infected nodes they are attached to; once infected, they may recover and acquire immunization. The epidemic ends when all the infected nodes move to the recovered stage. The epidemic dynamics are represented by the infective and recovery curves, which correspond respectively to the count of infected and recovered cases over time (Figure 2).
-The reasons that lead network structure to influence epidemic dynamics are researched in the analysis of these curves, as shown in Figure 2:
+Furthermore, the study incorporates simulations of epidemic spreading using the SIR model to quantify how errors/attacks affect disease transmission dynamics. Through the SIR model, each node within the network can be in one of three stages: Susceptible (S), Infected (I), or Recovered (R). Susceptible nodes can be infected only by the infected nodes they are attached to; once infected, they may recover and acquire immunization. The epidemic ends when all the infected nodes move to the recovered stage. The epidemic dynamics are represented by the infective and recovery curves, which correspond respectively to the count of infected and recovered cases over time (see next Figure).
+The reasons that lead network structure to influence epidemic dynamics are researched in the analysis of these curves, as shown in the following Figure:
 
 ![](https://github.com/mianascimben/network_project/blob/main/images/scheme.PNG)
 
