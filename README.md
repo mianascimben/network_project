@@ -124,7 +124,7 @@ options:
 ```
 Here an example from the command line:
 ```
-python network_code -n SF -m epidemic -f duration - N 50 -steps 25 -num_sim 20 -num_points 15
+network_code -n SF -m epidemic -f duration -N 50 -steps 25 -num_sim 20 -num_points 15
 ```
 
 ### Python pipeline 
