@@ -5,6 +5,7 @@ Tests the remaining functions in analysis_functions
 import pytest
 import networkx as nx
 import numpy as np
+import random as rn
 from network_code.analysis_functions import generate_network, connectivity_analysis, fragmentation_analysis, epidemic_feature_analysis
 from network_code.simulation import ToleranceSimulation, EpidemicToleranceSimulation
 from network_code import diameter, largest_connected_component_size, average_size_connected_components
@@ -30,7 +31,7 @@ def structural_sim(graph):
     return sim 
 @pytest.fixture
 def connectivity_output(structural_sim):
-    return connectivity_analysis(structural_sim)
+    return connectivity_analysis(structural_sim, random_seed = 10203)
 
 def test_connectivity_output_length(structural_sim, connectivity_output):
     '''
@@ -61,7 +62,8 @@ def test_connectivity_check_freq (structural_sim, connectivity_output):
     expected = structural_sim.frequencies_cleaned
     array_expected = np.array(expected)
     array_output = np.array(connectivity_output[0])
-    assert (array_output - array_expected).all() < 1e-7
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all()
    
 def test_connectivity_check_d_error (structural_sim, connectivity_output):
     '''
@@ -74,10 +76,11 @@ def test_connectivity_check_d_error (structural_sim, connectivity_output):
         of the 'connectivity_analysis' 
     THEN: all the elements are zero
     '''
-    _, expected = structural_sim.graph_property_vs_removals(diameter, error)
+    _, expected = structural_sim.graph_property_vs_removals(diameter, error, random_seed = 10203)
     array_expected = np.array(expected)
     array_output = np.array(connectivity_output[1])
-    assert (array_output - array_expected).all() < 1e-7
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all()
     
 def test_connectivity_check_d_attack (structural_sim, connectivity_output):
     '''
@@ -90,14 +93,15 @@ def test_connectivity_check_d_attack (structural_sim, connectivity_output):
         of the 'connectivity_analysis' 
     THEN: all the elements are zero
     '''
-    _, expected = structural_sim.graph_property_vs_removals(diameter, attack)
+    _, expected = structural_sim.graph_property_vs_removals(diameter, attack, random_seed = 10203)
     array_expected = np.array(expected)
     array_output = np.array(connectivity_output[2])
-    assert (array_output - array_expected).all() < 1e-7
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all()
  
 @pytest.fixture
 def fragmentation_output(structural_sim):
-    return fragmentation_analysis(structural_sim)
+    return fragmentation_analysis(structural_sim, random_seed = 10203)
 
 def test_fragmentation_output_length(structural_sim, fragmentation_output):
     '''
@@ -130,7 +134,8 @@ def test_fragmentation_check_freq (structural_sim, fragmentation_output):
     expected = structural_sim.frequencies_cleaned
     array_expected = np.array(expected)
     array_output = np.array(fragmentation_output[0])
-    assert (array_output - array_expected).all() < 1e-7
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all()
    
 def test_fragmentation_check_S_error (structural_sim, fragmentation_output):
     '''
@@ -143,10 +148,11 @@ def test_fragmentation_check_S_error (structural_sim, fragmentation_output):
         of the 'fragmentation_analysis' 
     THEN: all the elements are zero
     '''
-    _, expected = structural_sim.graph_property_vs_removals(largest_connected_component_size, error)
+    _, expected = structural_sim.graph_property_vs_removals(largest_connected_component_size, error, random_seed = 10203)
     array_expected = np.array(expected)
     array_output = np.array(fragmentation_output[1])
-    assert (array_output - array_expected).all() < 1e-7 
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all() 
 
 def test_fragmentation_check_S_attack (structural_sim, fragmentation_output):
     '''
@@ -159,10 +165,11 @@ def test_fragmentation_check_S_attack (structural_sim, fragmentation_output):
         of the 'fragmentation_analysis' 
     THEN: all the elements are zero
     '''
-    _, expected = structural_sim.graph_property_vs_removals(largest_connected_component_size, attack)
+    _, expected = structural_sim.graph_property_vs_removals(largest_connected_component_size, attack, random_seed = 10203)
     array_expected = np.array(expected)
     array_output = np.array(fragmentation_output[2])
-    assert (array_output - array_expected).all() < 1e-7 
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all() 
     
 def test_fragmentation_check_s_error (structural_sim, fragmentation_output):
     '''
@@ -176,10 +183,11 @@ def test_fragmentation_check_s_error (structural_sim, fragmentation_output):
         of the 'fragmentation_analysis' 
     THEN: all the elements are zero
     '''
-    _, expected = structural_sim.graph_property_vs_removals(average_size_connected_components, error)
+    _, expected = structural_sim.graph_property_vs_removals(average_size_connected_components, error, random_seed = 10203)
     array_expected = np.array(expected)
     array_output = np.array(fragmentation_output[3])
-    assert (array_output - array_expected).all() < 1e-7 
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all() 
     
 def test_fragmentation_check_s_attack (structural_sim, fragmentation_output):
     '''
@@ -193,10 +201,11 @@ def test_fragmentation_check_s_attack (structural_sim, fragmentation_output):
         of the 'fragmentation_analysis' 
     THEN: all the elements are zero
     '''
-    _, expected = structural_sim.graph_property_vs_removals(average_size_connected_components, attack)
+    _, expected = structural_sim.graph_property_vs_removals(average_size_connected_components, attack, random_seed = 10203)
     array_expected = np.array(expected)
     array_output = np.array(fragmentation_output[4])
-    assert (array_output - array_expected).all() < 1e-7
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all()
 
 @pytest.fixture
 def epidemic_sim(graph):
@@ -205,7 +214,7 @@ def epidemic_sim(graph):
     
 @pytest.fixture
 def peak_output(epidemic_sim):
-    return epidemic_feature_analysis(epidemic_sim, peak, num_simulations = 1)
+    return epidemic_feature_analysis(epidemic_sim, peak, num_simulations = 1, random_seed = 10203)
 
 def test_peak_check_freq (epidemic_sim, peak_output):
     '''
@@ -221,7 +230,8 @@ def test_peak_check_freq (epidemic_sim, peak_output):
     expected = epidemic_sim.frequencies_cleaned
     array_expected = np.array(expected)
     array_output = np.array(peak_output[0])
-    assert (array_output - array_expected).all() < 1e-7
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all()
    
 def test_epidemic_feature_check_peak_error(epidemic_sim, peak_output, num_simulations = 1):
     '''
@@ -234,10 +244,11 @@ def test_epidemic_feature_check_peak_error(epidemic_sim, peak_output, num_simula
         of the 'epidemic_feature_analysis(_, peak, _)' 
     THEN: all the elements are zero
     '''
-    _, expected =  epidemic_sim.epidemic_property_vs_removals(peak, error, num_simulations)
+    _, expected =  epidemic_sim.epidemic_property_vs_removals(peak, error, num_simulations, random_seed = 10203)
     array_expected = np.array(expected)
     array_output = np.array(peak_output[1])
-    assert (array_output - array_expected).all() < 1e-7
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all()
 
 def test_epidemic_feature_check_peak_attack(epidemic_sim, peak_output, num_simulations = 1):
     '''
@@ -250,14 +261,15 @@ def test_epidemic_feature_check_peak_attack(epidemic_sim, peak_output, num_simul
         of the 'epidemic_feature_analysis(_, peak, _)' 
     THEN: all the elements are zero
     '''
-    _, expected =  epidemic_sim.epidemic_property_vs_removals(peak, attack, num_simulations)
+    _, expected =  epidemic_sim.epidemic_property_vs_removals(peak, attack, num_simulations, random_seed = 10203)
     array_expected = np.array(expected)
     array_output = np.array(peak_output[2])
-    assert (array_output - array_expected).all() < 1e-7
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all()
     
 @pytest.fixture
 def t_peak_output(epidemic_sim):
-    return epidemic_feature_analysis(epidemic_sim, t_peak, num_simulations = 1)
+    return epidemic_feature_analysis(epidemic_sim, t_peak, num_simulations = 1, random_seed = 10203)
 
 def test_epidemic_feature_check_t_peak_error(epidemic_sim, t_peak_output, num_simulations = 1):
     '''
@@ -270,10 +282,11 @@ def test_epidemic_feature_check_t_peak_error(epidemic_sim, t_peak_output, num_si
         of the 'epidemic_feature_analysis(_, t_peak, _)' 
     THEN: all the elements are zero
     '''
-    _, expected =  epidemic_sim.epidemic_property_vs_removals(t_peak, error, num_simulations)
+    _, expected =  epidemic_sim.epidemic_property_vs_removals(t_peak, error, num_simulations, random_seed = 10203)
     array_expected = np.array(expected)
     array_output = np.array(t_peak_output[1])
-    assert (array_output - array_expected).all() < 1e-7
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all()
     
 def test_epidemic_feature_check_t_peak_attack(epidemic_sim, t_peak_output, num_simulations = 1):
     '''
@@ -286,14 +299,15 @@ def test_epidemic_feature_check_t_peak_attack(epidemic_sim, t_peak_output, num_s
         of the 'epidemic_feature_analysis(_, t_peak, _)' 
     THEN: all the elements are zero
     '''
-    _, expected =  epidemic_sim.epidemic_property_vs_removals(t_peak, attack, num_simulations)
+    _, expected =  epidemic_sim.epidemic_property_vs_removals(t_peak, attack, num_simulations, random_seed = 10203)
     array_expected = np.array(expected)
     array_output = np.array(t_peak_output[2])
-    assert (array_output - array_expected).all() < 1e-7
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all()
 
 @pytest.fixture
 def duration_output(epidemic_sim):
-    return epidemic_feature_analysis(epidemic_sim, epidemic_duration, num_simulations = 1)
+    return epidemic_feature_analysis(epidemic_sim, epidemic_duration, num_simulations = 1, random_seed = 10203)
 
 def test_epidemic_feature_check_duration_error(epidemic_sim, duration_output, num_simulations = 1):
     '''
@@ -306,10 +320,11 @@ def test_epidemic_feature_check_duration_error(epidemic_sim, duration_output, nu
         second output  of the 'epidemic_feature_analysis(_, epidemic_duration, _)' 
     THEN: all the elements are zero
     '''
-    _, expected =  epidemic_sim.epidemic_property_vs_removals(epidemic_duration, error, num_simulations)
+    _, expected =  epidemic_sim.epidemic_property_vs_removals(epidemic_duration, error, num_simulations, random_seed = 10203)
     array_expected = np.array(expected)
     array_output = np.array(duration_output[1])
-    assert (array_output - array_expected).all() < 1e-7
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all()
     
 def test_epidemic_feature_check_duration_attack(epidemic_sim, duration_output, num_simulations = 1):
     '''
@@ -322,14 +337,15 @@ def test_epidemic_feature_check_duration_attack(epidemic_sim, duration_output, n
         third output  of the 'epidemic_feature_analysis(_, epidemic_duration, _)' 
     THEN: all the elements are zero
     '''
-    _, expected =  epidemic_sim.epidemic_property_vs_removals(epidemic_duration, attack, num_simulations)
+    _, expected =  epidemic_sim.epidemic_property_vs_removals(epidemic_duration, attack, num_simulations, random_seed = 10203)
     array_expected = np.array(expected)
     array_output = np.array(duration_output[2])
-    assert (array_output - array_expected).all() < 1e-7
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all()
     
 @pytest.fixture
 def infected_output(epidemic_sim):
-    return epidemic_feature_analysis(epidemic_sim, total_infected, num_simulations = 1)
+    return epidemic_feature_analysis(epidemic_sim, total_infected, num_simulations = 1, random_seed = 10203)
 
 def test_epidemic_feature_check_infected_error(epidemic_sim, infected_output, num_simulations = 1):
     '''
@@ -342,12 +358,13 @@ def test_epidemic_feature_check_infected_error(epidemic_sim, infected_output, nu
         second output  of the 'epidemic_feature_analysis(_, total_infected, _)' 
     THEN: all the elements are zero
     '''
-    _, expected =  epidemic_sim.epidemic_property_vs_removals(total_infected, error, num_simulations)
+    _, expected =  epidemic_sim.epidemic_property_vs_removals(total_infected, error, num_simulations, random_seed = 10203)
     array_expected = np.array(expected)
     array_output = np.array(infected_output[1])
-    assert (array_output - array_expected).all() < 1e-7
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all()
     
-def test_epidemic_feature_check_infectedk_attack(epidemic_sim, infected_output, num_simulations = 1):
+def test_epidemic_feature_check_infected_attack(epidemic_sim, infected_output, num_simulations = 1):
     '''
     Tests that the third output of 'epidemic_feature_analysis(_, total_infected, _)'
     are the values of total infected cases for the graph which undergoes attacks.
@@ -358,7 +375,8 @@ def test_epidemic_feature_check_infectedk_attack(epidemic_sim, infected_output, 
         third output  of the 'epidemic_feature_analysis(_, total_infected, _)' 
     THEN: all the elements are zero
     '''
-    _, expected =  epidemic_sim.epidemic_property_vs_removals(total_infected, attack, num_simulations)
+    _, expected =  epidemic_sim.epidemic_property_vs_removals(total_infected, attack, num_simulations, random_seed = 10203)
     array_expected = np.array(expected)
     array_output = np.array(infected_output[2])
-    assert (array_output - array_expected).all() < 1e-7
+    diff = array_output - array_expected
+    assert (diff < 1e-7).all()

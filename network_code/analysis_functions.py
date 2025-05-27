@@ -19,6 +19,7 @@
 
 import networkx as nx
 import numpy as np
+import random as rn
 import pickle 
 import os
 from .remotion_functions import error, attack 
@@ -441,7 +442,7 @@ def generate_network(network_type, *kwargs):
             G = pickle.load(f)
         return G
             
-def connectivity_analysis(sim):
+def connectivity_analysis(sim, random_seed = None):
     '''
     Analyzes the diameter of a network under the increasing of node removals 
     due to errors and attacks.
@@ -454,6 +455,9 @@ def connectivity_analysis(sim):
     sim : ToleranceSimulation
         An instance of the ToleranceSimulation class, which manages node removal 
         and metric evaluation.
+        
+    random_seed : int
+        For reproducibility
         
     Returns
     -------
@@ -470,12 +474,12 @@ def connectivity_analysis(sim):
     
     '''
     
-    freq, results_error = sim.graph_property_vs_removals(diameter, error)
-    _, results_attack = sim.graph_property_vs_removals(diameter, attack)
+    freq, results_error = sim.graph_property_vs_removals(diameter, error, random_seed)
+    _, results_attack = sim.graph_property_vs_removals(diameter, attack, random_seed)
     
     return freq, results_error, results_attack
     
-def fragmentation_analysis(sim):
+def fragmentation_analysis(sim, random_seed = None):
     """
     Analyzes the fragmentation of a network under node removals due to errors 
     and attacks.
@@ -492,7 +496,10 @@ def fragmentation_analysis(sim):
     sim : ToleranceSimulation
         An instance of the ToleranceSimulation class, which manages node removal 
         and metric evaluation.
-
+    
+    random_seed : int
+        For reproducibility
+        
     Returns
     -------
     freq : np.ndarray
@@ -514,17 +521,17 @@ def fragmentation_analysis(sim):
         Average size of non-giant connected components at each removal frequency 
         under targeted attacks.
     """
-
-    freq, S_error = sim.graph_property_vs_removals(largest_connected_component_size, error)
-    _, S_attack = sim.graph_property_vs_removals(largest_connected_component_size, attack)
+    # data for S
+    freq, S_error = sim.graph_property_vs_removals(largest_connected_component_size, error, random_seed)
+    _, S_attack = sim.graph_property_vs_removals(largest_connected_component_size, attack, random_seed)
 
     # data for <s>
-    _, s_error = sim.graph_property_vs_removals(average_size_connected_components, error)
-    _, s_attack = sim.graph_property_vs_removals(average_size_connected_components, attack)
+    _, s_error = sim.graph_property_vs_removals(average_size_connected_components, error, random_seed)
+    _, s_attack = sim.graph_property_vs_removals(average_size_connected_components, attack, random_seed)
 
     return freq, S_error, S_attack, s_error, s_attack
 
-def epidemic_feature_analysis(sim, feature, num_simulations = 100):
+def epidemic_feature_analysis(sim, feature, num_simulations = 100, random_seed = None):
     """
     Analyzes how an epidemic feature evolves as nodes are progressively removed
     from the network due to errors or targeted attacks.
@@ -542,6 +549,9 @@ def epidemic_feature_analysis(sim, feature, num_simulations = 100):
     feature : function
         A function that computes the epidemic metric of interest (e.g. total_infected,
         epidemic_duration, peak, t_peak) on simulation results.
+    
+    random_seed : int
+        For reproducibility
 
     Returns
     -------
@@ -554,8 +564,8 @@ def epidemic_feature_analysis(sim, feature, num_simulations = 100):
     results_attack : list of float
         Values of the epidemic metric computed at each removal frequency under targeted attacks.
     """
-    
-    freq, results_error = sim.epidemic_property_vs_removals(feature, error, num_simulations)
-    _, results_attack = sim.epidemic_property_vs_removals(feature, attack, num_simulations)
+        
+    freq, results_error = sim.epidemic_property_vs_removals(feature, error, num_simulations, random_seed)
+    _, results_attack = sim.epidemic_property_vs_removals(feature, attack, num_simulations, random_seed)
     
     return freq, results_error, results_attack

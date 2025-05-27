@@ -8,6 +8,7 @@
 
 import networkx as nx
 import numpy as np
+import random as rn
 import inspect
 import matplotlib.pyplot as plt
 from .plot_functions import display_epidemic
@@ -136,7 +137,7 @@ class ToleranceSimulation(GetRemotionFrequencies):
         super().__init__(G, max_removal_rate, num_points)
         self.G = G
         
-    def graph_property_vs_removals(self, property_function, removal_function):
+    def graph_property_vs_removals(self, property_function, removal_function, random_seed = None):
         '''
         Calculates the specified graph property as a function of node removals.
 
@@ -153,6 +154,8 @@ class ToleranceSimulation(GetRemotionFrequencies):
             A function that calculates a property of the graph.
         removal_function : function
             A function that removes nodes from the graph.
+        random_seed : int
+            For reproducibility
 
         Returns:
         -------
@@ -171,6 +174,10 @@ class ToleranceSimulation(GetRemotionFrequencies):
         [3.3, 3.3, 3.4, 3.5, 3.6]
         
         '''
+        if random_seed is not None:
+            rn.seed(random_seed)
+            np.random.seed(random_seed)
+            
         property_values = []
         
         for i in self.num_removals_cleaned:
@@ -450,7 +457,7 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
         self.G = G
         
         
-    def epidemic_property_vs_removals(self, property_function, removal_function, num_simulations, *args, **kwargs):
+    def epidemic_property_vs_removals(self, property_function, removal_function, num_simulations, random_seed = None, *args, **kwargs):
         '''
         Simulates the effect of node removals on an epidemic spreading and 
         records the changing in the value of the property given by 
@@ -474,6 +481,8 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
             The number of simulations to run for each removal stage, allowing 
             for the averaging of results 
             to account for the randomness in epidemic spreading.
+        random_seed : int
+            For reproducibility
         *args : tuple
             Additional arguments to pass to the property function.
         **kwargs : dict
@@ -509,6 +518,10 @@ class EpidemicToleranceSimulation(GetRemotionFrequencies):
         >>> duration
         [45.1, 50.0, 35.8, 50.0, 50.0]
         '''
+        
+        if random_seed is not None:
+            rn.seed(random_seed)
+            np.random.seed(random_seed)
 
         property_values = []
          
