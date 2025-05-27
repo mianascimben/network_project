@@ -45,7 +45,7 @@ To understand the impact of errors/attacks on the network structure you can calc
 + **_S_**: the size of the giant components detects the disgragation process from one single aggregate into smaller and disconnected subgroups.  
 + **_<_s_>_**: the average size of all the connected components except the largest one: reveals the organization of the fragments into smaller and bigger clusters following fragmentation.
 
-#### Structural Results: plots[^1]
+#### Structural Results: plots
 
 ![diameter and fragmentation images](https://github.com/mianascimben/network_project/blob/main/images/graph_analysis_diameter_plot.PNG)
 ![](https://github.com/mianascimben/network_project/blob/main/images/graph_analysis_S_plot.PNG)
@@ -60,7 +60,7 @@ The reasons that lead network structure to influence epidemic dynamics are resea
 + **t_peak**: the time step at which the infection peak is reached
 + **epidemic_duration**: how long the epidemic has lasted 
 + **total_infected**: the total number of infected cases that have been recorded during all the epidemic (even the recovered ones).
-#### Epidemic results: plots[^1]
+#### Epidemic results: plots
 ![epidemic images](https://github.com/mianascimben/network_project/blob/main/images/epidemic_ER_SF_plot.PNG)
 
 ## Prerequisites
@@ -70,6 +70,8 @@ In ['requirements.txt'](https://github.com/mianascimben/network-project/blob/mai
 ## Installation
 
 Python version supported : ![Python version](https://img.shields.io/badge/python-3.8|3.9|3.10|3.11-blue.svg)
+
+The following instructions work in the command prompt of Python.
 
 1. Clone the 'network_project' repository from GitHub and enter in its the directory:
 ```bash
